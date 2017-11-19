@@ -15,14 +15,14 @@ using System.Windows.Shapes;
 
 namespace GizmoBall
 {
-	/// <summary>
-	/// SceneUC.xaml 的交互逻辑
-	/// </summary>
-	public partial class SceneUC : UserControl
-	{
-		public SceneUC()
-		{
-			InitializeComponent();
-		}
-	}
+    /// <summary>
+    /// SceneUC.xaml 的交互逻辑
+    /// </summary>
+    public partial class SceneUC : UserControl
+    {
+        public SceneUC()
+        {
+            InitializeComponent();
+        }
+    }
 }
