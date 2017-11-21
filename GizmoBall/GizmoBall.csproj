@@ -54,6 +54,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Physics\Circle.cs" />
+    <Compile Include="Physics\Ball.cs" />
+    <Compile Include="Physics\Scene.cs" />
+    <Compile Include="Physics\Destroyer.cs" />
+    <Compile Include="Physics\Flipper.cs" />
+    <Compile Include="Physics\Triangle.cs" />
+    <Compile Include="Physics\Rectangle.cs" />
     <Compile Include="Physics\Vector2.cs" />
     <Compile Include="SceneUC.xaml.cs">
       <DependentUpon>SceneUC.xaml</DependentUpon>
