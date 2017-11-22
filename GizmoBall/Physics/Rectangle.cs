@@ -16,6 +16,19 @@ namespace GizmoBall.Physics
             Size = tmp;
         }
 
+        /*
+        //实现计算出lines
+        public List<Vector2> Lines
+        {
+            get
+            {
+                lines.Clear();
+                lines.Add(new Vector2(0,Position.y));//最上面的边
+                lines.Add(new Vector2());
+            }
+        }
+
+        */
         public Rectangle(Vector2 position, Vector2 size, Vector2 speed, float density)
         {
             Position = position;

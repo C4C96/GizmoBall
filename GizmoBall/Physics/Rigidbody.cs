@@ -21,6 +21,9 @@ namespace GizmoBall.Physics
         //密度用来计算碰撞动量
         private float density;
 
+        //表示图形的各条边，y=ax+b ，a和b分别为xy
+        protected List<Vector2> lines = new List<Vector2>();
+
 
         public Vector2 Position
         {
