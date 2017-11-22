@@ -23,6 +23,31 @@ namespace GizmoBall
         public SceneUC()
         {
             InitializeComponent();
+			DrawAxis(20, 20);
         }
-    }
+
+		private void DrawAxis(int x, int y)
+		{
+			AxisGrid.Children.Clear();
+			AxisGrid.ColumnDefinitions.Clear();
+			AxisGrid.RowDefinitions.Clear();
+			for (int i = 0; i < x; i++)
+				AxisGrid.ColumnDefinitions.Add(new ColumnDefinition());
+			for (int i = 0; i < y; i++)
+				AxisGrid.RowDefinitions.Add(new RowDefinition());
+			for (int i = 0; i < x; i++)
+				for (int j = 0; j < y; j++)
+				{
+					var border = new Border()
+					{
+						Margin = new Thickness(0),
+						BorderBrush = new SolidColorBrush(Colors.White),
+						BorderThickness = new Thickness(0.5),
+					};
+					Grid.SetColumn(border, i);
+					Grid.SetRow(border, j);
+					AxisGrid.Children.Add(border);					
+				}
+		}
+	}
 }
