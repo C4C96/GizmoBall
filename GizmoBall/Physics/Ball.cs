@@ -6,19 +6,8 @@ using System.Threading.Tasks;
 
 namespace GizmoBall.Physics
 {
-    class Ball : Rigidbody
-    {
-        public override void Rotate()
-        {
+	public class Ball : Circle
+	{
 
-        }
-
-        public Ball(Vector2 position, Vector2 size, Vector2 speed, float density)
-        {
-            Position = position;
-            Size = size;
-            Speed = speed;
-            Density = density;
-        }
-    }
+	}
 }

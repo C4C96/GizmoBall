@@ -6,19 +6,34 @@ using System.Threading.Tasks;
 
 namespace GizmoBall.Physics
 {
-    class Circle : Rigidbody
+    public class Circle : Rigidbody
     {
-        public override void Rotate()
-        {
-            
-        }
+		public override List<Vector2> Lines
+		{
+			get
+			{
+				// 简化成八边形
+				List<Vector2> lines = new List<Vector2>();
+				
+				return lines;
+			}
+		}
 
-        public Circle(Vector2 position, Vector2 size, Vector2 speed, float density)
-        {
-            Position = position;
-            Size = size;
-            Speed = speed;
-            Density = density;
-        }
-    }
+		public override object Clone()
+		{
+			Circle ret = new Circle()
+			{
+				position = this.position,
+				size = this.size,
+				speed = this.speed,
+				density = this.density,
+			};
+			return ret;
+		}
+
+		public override void Rotate()
+		{
+
+		}
+	}
 }

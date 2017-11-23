@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace GizmoBall.Physics
 {
-    class Scene
+    public class Scene : ICloneable
     {
-        //地图的尺寸
-        readonly Vector2 size;
+        // 地图的尺寸
+        private readonly Vector2 size;
 
-        //设置好重力加速度
+        // 设置好重力加速度
         private float gravity;
 
-        //被撞后是否移动,true 不受碰撞影响
+        // 被撞后是否移动,true 不受碰撞影响
         private bool isKinematic;
 
         private List<Rigidbody> obstacles = new List<Rigidbody>();
@@ -27,117 +27,86 @@ namespace GizmoBall.Physics
 
         public float Gravity
         {
-            get
-            {
-                return gravity;
-            }
-            set
-            {
-                gravity = value;
-            }
+            get => gravity;
+			set => gravity = value;
         }
 
         public bool IsKinematic
         {
-            get
-            {
-                return isKinematic;
-            }
-            set
-            {
-                isKinematic = value;
-            }
+            get => isKinematic;
+            set => isKinematic = value;
         }
 
         public List<Rigidbody> Obstacles
         {
-            get
-            {
-                return obstacles;
-            }
+            get => obstacles;
         }
 
         public Destroyer Destroyer
         {
-            get
-            {
-                return destroyer;
-            }
-            set
-            {
-                destroyer = value;
-            }
+            get => destroyer;
+            set => destroyer = value;
         }
 
         public Ball Ball
         {
-            get
-            {
-                return ball;
-            }
-            set
-            {
-                ball = value;
-            }
+            get =>  ball;
+            set => ball = value;
         }
 
         public Flipper Flipper
         {
-            get
-            {
-                return flipper;
-            }
-            set
-            {
-                flipper = value;
-            }
+            get => flipper;
+            set => flipper = value;
         }
-
-        //用来记录上一帧的时间
-        DateTime lastTime = new DateTime();
-
+		
         public Vector2 Size
         {
-            get
-            {
-                return size;
-            }
+            get => size;
         }
-        
 
-        //调用后进行下一帧的处理，修正速度，修正位置，判断碰撞，碰撞后处理
-        public void NextFrame()
+		// 用来记录上一帧的时间
+		private DateTime? lastTime;
+
+		// 调用后进行下一帧的处理，修正速度，修正位置，判断碰撞，碰撞后处理
+		public void NextFrame()
         {
+			if (lastTime == null)
+			{
+				lastTime = DateTime.Now;
+				return;
+			}
+			DateTime now = DateTime.Now;
+			int deltaTime = (now - lastTime.Value).Milliseconds; // 与上一帧的时间差（毫秒）
+			lastTime = now;
 
+			// 请开始你的表演
         }
 
-        //判断两个障碍物是否相撞
+        // 判断两个障碍物是否相撞
         private bool Hit(Rigidbody rigidbody1 , Rigidbody rigidbody2)
         {
             return false;
         }
 
-        //用来获取本帧和上一帧的时间差，并设置上一帧时间为本帧
-        private long TimeDiff()
-        {
-            long timeDiff = 0;
-            DateTime nowTime = DateTime.Now;
-            TimeSpan diff = nowTime - lastTime;
-            timeDiff = diff.Milliseconds;
-            lastTime = nowTime;
-            return timeDiff;
-        }
+		public object Clone()
+		{
+			Scene ret = new Scene((int)size.x, (int)size.y)
+			{
+				ball = this.ball.Clone() as Ball,
+				destroyer = this.destroyer.Clone() as Destroyer,
+				flipper = this.flipper.Clone() as Flipper,
+				gravity = this.gravity,
+				isKinematic = this.isKinematic
+			};
+			foreach (var rb in obstacles)
+				ret.obstacles.Add(rb.Clone() as Rigidbody);
+			return ret;
+		}
 
-        //深度拷贝
-        public void ICloneable()
+		public Scene(int x, int y)
         {
-
-        }
-
-        public Scene()
-        {
-            size.x = 20;
-            size.y = 20;
+			size = new Vector2(x, y);
         }
     }
 }

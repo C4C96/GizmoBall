@@ -63,20 +63,25 @@ namespace GizmoBall.Physics
 
 		#region Static Member
 
+		private static readonly Vector2 up = new Vector2(0f, -1f);
+		private static readonly Vector2 down = new Vector2(0f, 1f);
+		private static readonly Vector2 left = new Vector2(-1f, 0f);
+		private static readonly Vector2 right = new Vector2(1f, 0f);
+
 		/// <summary>
-		/// 获得向上的单位向量(0, 1)
+		/// 获得向上的单位向量(0, -1)
 		/// </summary>
 		public static Vector2 Up
 		{
-			get => new Vector2(0f, 1f);
+			get => up;
 		}
 
 		/// <summary>
-		/// 获得向下的单位向量(0, -1)
+		/// 获得向下的单位向量(0, 1)
 		/// </summary>
 		public static Vector2 Down
 		{
-			get => new Vector2(0f, -1f);
+			get => down;
 		}
 
 		/// <summary>
@@ -84,7 +89,7 @@ namespace GizmoBall.Physics
 		/// </summary>
 		public static Vector2 Left
 		{
-			get => new Vector2(-1f, .0f);
+			get => left;
 		}
 
 		/// <summary>
@@ -92,7 +97,7 @@ namespace GizmoBall.Physics
 		/// </summary>
 		public static Vector2 Right
 		{
-			get => new Vector2(1f, 0f);
+			get => right;
 		}
 
 		#region Operator Override

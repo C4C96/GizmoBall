@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GizmoBall.Physics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,10 +21,24 @@ namespace GizmoBall
     /// </summary>
     public partial class SceneUC : UserControl
     {
+		private Scene scene;
+
+		public Scene Scene
+		{
+			get => scene;
+			set
+			{
+				if (scene != null)
+					; // 解绑
+				scene = value;
+				// 绑定
+				DrawAxis((int)scene.Size.x, (int)scene.Size.y);
+			}
+		}
+
         public SceneUC()
         {
             InitializeComponent();
-			DrawAxis(20, 20);
         }
 
 		private void DrawAxis(int x, int y)

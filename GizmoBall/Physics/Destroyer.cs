@@ -6,19 +6,8 @@ using System.Threading.Tasks;
 
 namespace GizmoBall.Physics
 {
-    class Destroyer : Rigidbody
+    public class Destroyer : Rectangle
     {
-        public override void Rotate()
-        {
 
-        }
-
-        public Destroyer(Vector2 position, Vector2 size, Vector2 speed, float density)
-        {
-            Position = position;
-            Size = size;
-            Speed = speed;
-            Density = density;
-        }
     }
 }

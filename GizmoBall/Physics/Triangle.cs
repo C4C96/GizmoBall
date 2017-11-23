@@ -6,48 +6,55 @@ using System.Threading.Tasks;
 
 namespace GizmoBall.Physics
 {
-    class Triangle : Rigidbody
+    public class Triangle : Rigidbody
     {
-        //0-3分别为左上角，右上角，右下角，左下角
-        private int state;
-
-        public int State
+		private TriangleState state;
+		
+		public override List<Vector2> Lines
+		{
+			get
+			{
+				List<Vector2> lines = new List<Vector2>();
+				if (state != TriangleState.RightDown)
+					lines.Add(position);
+				if (state != TriangleState.LeftDown)
+					lines.Add(position + Vector2.Right * size.x);
+				if (state != TriangleState.LeftUp)
+					lines.Add(position + size);
+				if (state != TriangleState.RightUp)
+					lines.Add(position + Vector2.Down * size.y);
+				return lines;
+			}
+		}
+		
+		public override void Rotate()
         {
-            get
-            {
-                return state;
-            }
-            set
-            {
-                state = value;
-            }
+			Size = new Vector2(Size.y, Size.x);
+			state = (TriangleState)(((int)state + 1) % 4);
         }
 
-        //调用一次顺时针转90度
-        public override void Rotate()
-        {
-            //把state往后调
-            if(state>=0 && state <=2)
-            {
-                state++;
-            }
-            else
-            {
-                state = 0;
-            }
+		public override object Clone()
+		{
+			Triangle ret = new Triangle()
+			{
+				position = this.position,
+				size = this.size,
+				speed = this.speed,
+				density = this.density,
+				state = this.state,
+			};
+			return ret;
+		}
 
-            //size的边换一下
-            Vector2 tmp = new Vector2(Size.y, Size.x);
-            Size = tmp;
-        }
-
-        public Triangle(Vector2 position, Vector2 size, Vector2 speed, float density, int state)
-        {
-            Position = position;
-            Size = size;
-            Speed = speed;
-            Density = density;
-            State = state;
-        }
+		/// <summary>
+		/// 对于三角形在包围盒内位置的枚举
+		/// </summary>
+		private enum TriangleState : int
+		{
+			LeftUp = 0,
+			RightUp,
+			RightDown,
+			LeftDown,
+		}
     }
 }
