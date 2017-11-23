@@ -80,13 +80,72 @@ namespace GizmoBall.Physics
 			int deltaTime = (now - lastTime.Value).Milliseconds; // 与上一帧的时间差（毫秒）
 			lastTime = now;
 
-			// 请开始你的表演
+			foreach(var obstacle1 in Obstacles)
+            {
+                foreach(var obstacle2 in Obstacles)
+                {
+                    if (obstacle1 == obstacle2) continue;
+
+                    if(Hit(obstacle1,obstacle2)) //这俩会撞
+                    {
+
+                    }
+                }
+            }
         }
 
         // 判断两个障碍物是否相撞
         private bool Hit(Rigidbody rigidbody1 , Rigidbody rigidbody2)
         {
+            DateTime now = DateTime.Now;
+            int deltaTime = (now - lastTime.Value).Milliseconds; // 与上一帧的时间差（毫秒）
+
+            for(int i=0;i<rigidbody1.Lines.Count;i++)
+            {
+                Vector2 r1point1 = rigidbody1.Lines[i];  //第一个点
+                Vector2 r1point2 = new Vector2();  //第二个点
+                if(i!=rigidbody1.Lines.Count-1)
+                {
+                    r1point2 = rigidbody1.Lines[i + 1];
+                }
+                else
+                {
+                    r1point2 = rigidbody1.Lines[0];
+                }
+
+                if (r1point1.x == r1point2.x) //该直线是平行于y轴
+                {
+                    float next_x1 = r1point1.x + rigidbody1.Speed.x * deltaTime; //r1本帧应该到达的位置
+                    foreach (var r2point in rigidbody2.Lines)
+                    {
+                        float next_x2 = r2point.x + rigidbody2.Speed.x * deltaTime; //r2本帧应该到达的位置
+                        if ((r2point.x - r1point1.x) * (next_x2 - next_x1) <= 0)      //此时会相撞
+                        {
+                            return true;
+                        }
+                    }
+                }
+                else                      //y=ax+b
+                {
+                    float a = (r1point1.y - r1point2.y) / (r1point1.x - r1point2.x);
+                    float b = r1point1.y - a * r1point1.x;
+                    float next_b = b + rigidbody1.Speed.y * deltaTime;  //本帧应该变成的b
+                    foreach (var r2point in rigidbody2.Lines)
+                    {
+                        float next_x2 = r2point.x + rigidbody2.Speed.x * deltaTime; //r2本帧应该到达的位置
+                        float next_y2 = r2point.y + rigidbody2.Speed.y * deltaTime;
+                        if ((a * r2point.x - r2point.y) * (a * next_x2 - next_y2) <= 0) //此时会相撞
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+            }
+
+            
             return false;
+            
         }
 
 		public object Clone()
