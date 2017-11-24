@@ -225,6 +225,10 @@ namespace GizmoBall.Physics
                             }
                         }
                     }
+                    else //小球没有撞东西
+                    {
+                        ball.Position = new Vector2((ball.Position.x + ball.Speed.x * deltaTime),(ball .Position.y + ball.Speed.y * deltaTime));
+                    }
                 }
             }
 
