@@ -25,7 +25,7 @@ namespace GizmoBall.Physics
 		
 		public override void Rotate()
         {
-			Size = new Vector2(Size.y, Size.x);
+
         }
 
 		public override object Clone()

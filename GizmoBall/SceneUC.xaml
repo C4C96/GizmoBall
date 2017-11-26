@@ -6,11 +6,10 @@
              xmlns:local="clr-namespace:GizmoBall"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Canvas Name="MainCanvas" Background="Black">
+    <Canvas Name="MainCanvas" Background="Black" >
         <Grid  Name="AxisGrid"
                Height="{Binding ElementName=MainCanvas, Path=ActualHeight}" 
                Width="{Binding ElementName=MainCanvas, Path=ActualWidth}" />
-
-
+    
     </Canvas>
 </UserControl>

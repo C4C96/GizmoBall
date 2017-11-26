@@ -331,13 +331,14 @@ namespace GizmoBall.Physics
 			Scene ret = new Scene((int)size.x, (int)size.y)
 			{
 				ball = this.ball.Clone() as Ball,
-				destroyer = this.destroyer.Clone() as Destroyer,
 				flipper = this.flipper.Clone() as Flipper,
 				gravity = this.gravity,
 				isKinematic = this.isKinematic
 			};
 			foreach (var rb in obstacles)
 				ret.obstacles.Add(rb.Clone() as Rigidbody);
+			foreach (var d in destroyers)
+				ret.destroyers.Add(d.Clone() as Destroyer);
 			return ret;
 		}
 
