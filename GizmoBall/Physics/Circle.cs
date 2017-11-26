@@ -33,6 +33,14 @@ namespace GizmoBall.Physics
 			}
 		}
 
+        public float Rad
+        {
+            get
+            {
+                return Size.x / 2;
+            }
+        }
+
 		public override object Clone()
 		{
 			Circle ret = new Circle()
