@@ -8,10 +8,9 @@
         AllowsTransparency="True" WindowStyle="None" Background="Transparent"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
         PreviewKeyDown="Window_PreviewKeyDown"
-        MouseWheel="Window_MouseWheel"
         MinHeight="600" MinWidth="740"
         MaxHeight="1200" MaxWidth="1520"
-        Title="GizmoBall" Height="600" Width="740" >
+        Title="GizmoBall" Height="720" Width="880" >
     <Grid Name="MainGrid">
         <Border CornerRadius="5" Margin="10" BorderThickness="2" BorderBrush="White" Opacity="0.8">
             <Border.Effect>
@@ -33,41 +32,58 @@
 
             <Grid Grid.Column="1" Margin="10,60,20,50">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="2*"/>
                     <RowDefinition Height="1*"/>
-                    <RowDefinition Height="4*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="3*"/>
                 </Grid.RowDefinitions>
 
-                <WrapPanel Grid.Row="0"
+                <Image Name="BallImage" Source="./Images/Ball.png" 
+                       Grid.Row="0"
+                       HorizontalAlignment="Left"
+                       Height="30" Width="30" Margin="10" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+
+                <WrapPanel Grid.Row="1"
                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                    <Image Source="./Images/Rectangle.png" 
+                    <Image Name="RectangleImage" Source="./Images/Rectangle.png" 
                        Height="30" Width="30" Margin="10" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
-                    <Image Source="./Images/Triangle.png" 
+                    <Image Name="TriangleImage" Source="./Images/Triangle.png" 
                        Height="30" Width="30" Margin="10" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
-                    <Image Source="./Images/Circle.png" 
-                       Height="30" Width="30" Margin="10" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
-                    <Image Source="./Images/Rectangle.png" 
-                       Height="30" Width="30" Margin="10" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
-                    <Image Source="./Images/Rectangle.png" 
-                       Height="30" Width="30" Margin="10" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
-                    <Image Source="./Images/Rectangle.png" 
+                    <Image Name="CircleImage" Source="./Images/Circle.png" 
                        Height="30" Width="30" Margin="10" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
                 </WrapPanel>
 
-                <Grid Grid.Row="1" VerticalAlignment="Top"
-                      Background="#8F818181">
+                <Image Name="DestroyerImage" Source="./Images/Destroyer.png" 
+                       Grid.Row="2"
+                       Stretch="Fill"
+                       Height="30" Margin="10" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+
+                <Grid Grid.Row="3" VerticalAlignment="Top"
+                      Background="#8F818181"
+                      Margin="0, 20">
                     <Label Content="大小：" FontSize="15"
                            HorizontalAlignment="Left"
                            Height="30"/>
-                    <TextBox Margin="51,0,0,0"
+                    <TextBox Name="SizeXText" 
+                             Text="1"
+                             Margin="51,0,0,0"
                              HorizontalAlignment="Left"
-                             Height="20" Width="20"/>
+                             Height="20" Width="20"
+                             TextChanged="SizeText_TextChanged"
+                             PreviewMouseMove="SizeText_PreviewMouseMove"
+                             GotFocus="SizeText_GotFocus"/>
                     <Label Content="X" FontSize="15"
                            HorizontalAlignment="Left"
                            Height="30" Margin="73,0,0,0"/>
-                    <TextBox Margin="98,0,0,0"
+                    <TextBox Name="SizeYText"  
+                             Text="1"
+                             Margin="98,0,0,0"
                              HorizontalAlignment="Left"
-                             Height="20" Width="20"/>
+                             Height="20" Width="20"
+                             TextChanged="SizeText_TextChanged"
+                             PreviewMouseMove="SizeText_PreviewMouseMove"
+                             GotFocus="SizeText_GotFocus" />
                 </Grid>
 
             </Grid>

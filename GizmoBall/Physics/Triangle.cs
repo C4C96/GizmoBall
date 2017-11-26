@@ -9,7 +9,9 @@ namespace GizmoBall.Physics
     public class Triangle : Rigidbody
     {
 		private TriangleState state;
-		
+
+		public TriangleState State => state;
+
 		public override List<Vector2> Lines
 		{
 			get
@@ -29,8 +31,8 @@ namespace GizmoBall.Physics
 		
 		public override void Rotate()
         {
-			Size = new Vector2(Size.y, Size.x);
 			state = (TriangleState)(((int)state + 1) % 4);
+			OnPropertyChanged("TriangleState");
         }
 
 		public override object Clone()
@@ -49,12 +51,12 @@ namespace GizmoBall.Physics
 		/// <summary>
 		/// 对于三角形在包围盒内位置的枚举
 		/// </summary>
-		private enum TriangleState : int
-		{
-			LeftUp = 0,
+		public enum TriangleState : int
+		{			
+			LeftDown = 0,
+			LeftUp,
 			RightUp,
 			RightDown,
-			LeftDown,
 		}
     }
 }

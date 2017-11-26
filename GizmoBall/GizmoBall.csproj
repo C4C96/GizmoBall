@@ -62,6 +62,9 @@
     <Compile Include="Physics\Triangle.cs" />
     <Compile Include="Physics\Rectangle.cs" />
     <Compile Include="Physics\Vector2.cs" />
+    <Compile Include="RigidbodyUC.xaml.cs">
+      <DependentUpon>RigidbodyUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SceneUC.xaml.cs">
       <DependentUpon>SceneUC.xaml</DependentUpon>
     </Compile>
@@ -77,6 +80,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="RigidbodyUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="SceneUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -117,6 +124,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Circle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Ball.png" />
+    <Resource Include="Images\Destroyer.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
