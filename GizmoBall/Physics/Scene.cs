@@ -113,7 +113,27 @@ namespace GizmoBall.Physics
                     }
                 }
             }
+			if (Hit(flipper, ball, deltaTime) == true)  //小球跟挡板相撞了
+			{
+				for (int i = 0; i < flipper.Lines.Count; i++)
+				{
+					Vector2 r1point1 = flipper.Lines[i];
+					Vector2 r1point2;
+					if (i == flipper.Lines.Count - 1)
+						r1point2 = flipper.Lines[0];
+					else
+						r1point2 = flipper.Lines[i + 1];
 
+					foreach (var ballPoint in ball.Lines)
+					{
+						if (HitLine(r1point1, r1point2, ballPoint, ball.Speed, deltaTime) != 0)
+						{
+							Rebound(ballPoint, r1point1, r1point2, deltaTime);
+							return;
+						}
+					}
+				}
+			}
 			ball.Position += ball.Speed * deltaTime / 1000;
 			return;
         }
