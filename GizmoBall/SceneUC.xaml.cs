@@ -23,6 +23,9 @@ namespace GizmoBall
 	{
 		private Scene scene;
 		private bool[,] hasObject;
+		private bool isPlaying = false;
+
+		public bool IsPlaying => isPlaying;
 
 		public Scene Scene
 		{
@@ -30,11 +33,22 @@ namespace GizmoBall
 			set
 			{
 				if (scene != null)
-					; // 解绑
+				{
+					List<UIElement> tmp = new List<UIElement>();
+					foreach (var ui in MainCanvas.Children)
+						if (ui is RigidbodyUC)
+							tmp.Add(ui as UIElement);
+					foreach (var ui in tmp)
+						MainCanvas.Children.Remove(ui);
+				}
 				scene = value;
-				// 绑定
 				DrawAxis((int)scene.Size.x, (int)scene.Size.y);
 				hasObject = new bool[(int)scene.Size.x, (int)scene.Size.y];
+				AddRigidbody(scene.Ball);
+				foreach (var d in scene.Destroyers)
+					AddRigidbody(d);
+				foreach (var o in scene.Obstacles)
+					AddRigidbody(o);
 			}
 		}
 
@@ -51,6 +65,12 @@ namespace GizmoBall
 		public SceneUC()
 		{
 			InitializeComponent();
+			// 运行时阻止拖动
+			PreviewMouseLeftButtonDown += (o, e) =>
+			{
+				if (isPlaying)
+					e.Handled = true;
+			};
 		}
 
 		private void DrawAxis(int x, int y)
@@ -78,11 +98,37 @@ namespace GizmoBall
 		}
 
 		/// <summary>
-		/// 将一个RigidbodyUC加入SceneUC中
+		/// 根据已知的rigidbody，生成对应的UC，并加入SceneUC中，不修改Scene
+		/// </summary>
+		/// <param name="rigidbody"></param>
+		public void AddRigidbody(Rigidbody rigidbody)
+		{
+			if (rigidbody == null) return;
+
+			int x = (int)rigidbody.Position.x,
+				y = (int)rigidbody.Position.y,
+				width = (int)rigidbody.Size.x,
+				height = (int)rigidbody.Size.y;
+			RigidbodyUC uc = new RigidbodyUC()
+			{
+				Rigidbody = rigidbody,
+				Width = BlockWidth * width,
+				Height = BlockHeight * height,
+				HorizontalAlignment = HorizontalAlignment.Left,
+				VerticalAlignment = VerticalAlignment.Top,
+				Margin = new Thickness(x * BlockWidth, y * BlockHeight, 0, 0)
+			};
+			uc.PropertyChanged += RigidbodyUC_PropertyChanged;
+			MainCanvas.Children.Add(uc);
+			SetHasObject(x, y, width, height, true);
+		}
+
+		/// <summary>
+		/// 将一个RigidbodyUC加入SceneUC中，并更新Scene
 		/// </summary>
 		/// <param name="rigidbodyUC"></param>
 		/// <returns>若位置非法，则返回null；若位置已有其他RigidbodyUC则返回false；成功返回true</returns>
-		public bool? AddRigidbody(RigidbodyUC rigidbodyUC)
+		public bool? AddRigidbodyUC(RigidbodyUC rigidbodyUC)
 		{
 			int width = (int)rigidbodyUC.Rigidbody.Size.x;
 			int height = (int)rigidbodyUC.Rigidbody.Size.y;
@@ -90,11 +136,9 @@ namespace GizmoBall
 			int y = (int)rigidbodyUC.Rigidbody.Position.y;
 			if (x < 0 || x + width > scene.Size.x || y < 0 || y + height > scene.Size.y)
 				return null;
-			
-			for (int i = x; i < x + width; i++)
-				for (int j = y; j < y + height; j++)
-					if (hasObject[i, j])
-						return false;
+
+			if (!IsValible(x, y, width, height))
+				return false;
 
 			switch (rigidbodyUC.Type)
 			{
@@ -109,15 +153,14 @@ namespace GizmoBall
 					break;
 			}
 
-			for (int i = x; i < x + width; i++)
-				for (int j = y; j < y + height; j++)
-					hasObject[i, j] = true;
+			SetHasObject(x, y, width, height, true);
 			MainCanvas.Children.Add(rigidbodyUC);
+			rigidbodyUC.PropertyChanged += RigidbodyUC_PropertyChanged;
 			rigidbodyUC.Margin = new Thickness(x * BlockWidth, y * BlockHeight, 0, 0);
 			return true;
 		}
 
-		public void RemoveRigidbody(RigidbodyUC rigidbodyUC)
+		public void RemoveRigidbodyUC(RigidbodyUC rigidbodyUC)
 		{
 			if (rigidbodyUC.Parent != MainCanvas)
 				return;
@@ -126,9 +169,8 @@ namespace GizmoBall
 			int y = (int)rigidbodyUC.Rigidbody.Position.y;
 			int width = (int)rigidbodyUC.Rigidbody.Size.x;
 			int height = (int)rigidbodyUC.Rigidbody.Size.y;
-			for (int i = x; i < x + width; i++)
-				for (int j = y; j < y + height; j++)
-					hasObject[i, j] = false;
+			SetHasObject(x, y, width, height, false);
+			rigidbodyUC.PropertyChanged -= RigidbodyUC_PropertyChanged;
 			MainCanvas.Children.Remove(rigidbodyUC);
 
 			switch (rigidbodyUC.Type)
@@ -145,5 +187,58 @@ namespace GizmoBall
 			}
 		}
 
+		private void RigidbodyUC_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			RigidbodyUC rigidbodyUC = sender as RigidbodyUC;
+			if (rigidbodyUC == null) return;
+
+			switch (e.PropertyName)
+			{
+				case "Position":
+					rigidbodyUC.Margin = new Thickness(BlockWidth * rigidbodyUC.Rigidbody.Position.x,
+														BlockHeight * rigidbodyUC.Rigidbody.Position.y,
+														0, 0);
+					break;
+			}
+		}
+
+		private Scene backUp; // 备份
+		public void Play()
+		{
+			isPlaying = true;
+			backUp = scene.Clone() as Scene;
+			// TODO
+			CompositionTarget.Rendering += Update;
+		}
+
+		private void Update(object sender, EventArgs e)
+		{
+			if (scene != null)
+				scene.NextFrame();
+		}
+
+		public void Stop()
+		{
+			isPlaying = false;
+			// TODO
+			scene = backUp;
+			CompositionTarget.Rendering -= Update;
+		}
+
+		private bool IsValible(int x, int y, int width, int height)
+		{
+			for (int i = x; i < x + width; i++)
+				for (int j = y; j < y + height; j++)
+					if (hasObject[i, j])
+						return false;
+			return true;
+		}
+
+		private void SetHasObject(int x, int y, int width, int height, bool value)
+		{
+			for (int i = x; i < x + width; i++)
+				for (int j = y; j < y + height; j++)
+					hasObject[i, j] = value;
+		}
 	}
 }

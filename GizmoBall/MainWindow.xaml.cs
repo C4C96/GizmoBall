@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,6 +27,7 @@ namespace GizmoBall
 			InitializeComponent();
 			//SizeChanged += (o, e) => Width = (Height - 60) / 3 * 4;
 			SceneUC.Scene = new Scene(20, 20);
+			SceneUC.Scene.Gravity = 0.02f;
 		}
 
 		private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -141,7 +143,7 @@ namespace GizmoBall
 				lastPosition = draged.TranslatePoint(new Point(0, 0), SceneUC);
 				if (draged.Parent == SceneUC.MainCanvas)
 				{
-					SceneUC.RemoveRigidbody(draged);
+					SceneUC.RemoveRigidbodyUC(draged);
 					MainGrid.Children.Add(draged);
 				}
 				draged.SetValue(Panel.ZIndexProperty, 5);	
@@ -162,14 +164,28 @@ namespace GizmoBall
 				MainGrid.Children.Remove(draged);
 				draged.Rigidbody.Position = new Vector2((int)(pos.X / SceneUC.BlockWidth + 0.5), 
 														(int)(pos.Y / SceneUC.BlockHeight + 0.5));
-				if (SceneUC.AddRigidbody(draged) == false)
+				if (SceneUC.AddRigidbodyUC(draged) == false)
 				{
 					draged.Rigidbody.Position = new Vector2((int)(lastPosition.X / SceneUC.BlockWidth + 0.5),
 															(int)(lastPosition.Y / SceneUC.BlockHeight + 0.5));
-					SceneUC.AddRigidbody(draged);
+					SceneUC.AddRigidbodyUC(draged);
 				}
 				draged = null;
 			};
+		}
+
+		private void PlayStopButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			if (SceneUC.IsPlaying)
+			{
+				PlayStopButton.Source = new BitmapImage(new Uri(@"./Images/PlayButton.png", UriKind.Relative));
+				SceneUC.Stop();
+			}
+			else
+			{
+				PlayStopButton.Source = new BitmapImage(new Uri(@"./Images/StopButton.png", UriKind.Relative));
+				SceneUC.Play();
+			}
 		}
 
 		private void SizeText_TextChanged(object sender, TextChangedEventArgs e)

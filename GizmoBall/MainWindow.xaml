@@ -86,6 +86,20 @@
                              GotFocus="SizeText_GotFocus" />
                 </Grid>
 
+                <Grid Grid.Row="4" VerticalAlignment="Top"
+                      Background="#8F818181"
+                      Margin="0, 20">
+                    <Image Name="PlayStopButton" Source="./Images/PlayButton.png" 
+                           HorizontalAlignment="Left"
+                           Height="60" Width="60" MouseLeftButtonDown="PlayStopButton_MouseLeftButtonDown"/>
+                    <Image Name="SaveButton" Source="./Images/SaveButton.png" 
+                           HorizontalAlignment="Center"
+                           Height="60" Width="60" />
+                    <Image Name="LoadButton" Source="./Images/LoadButton.png" 
+                           HorizontalAlignment="Right"
+                           Height="60" Width="60" />
+                </Grid>
+                
             </Grid>
 
         </Grid>

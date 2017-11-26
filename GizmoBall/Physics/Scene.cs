@@ -113,8 +113,9 @@ namespace GizmoBall.Physics
                     }
                 }
             }
-            ball.Position = new Vector2(ball.Position.x + ball.Speed.y * deltaTime, ball.Position.y + ball.Speed.y * deltaTime);
-            return;
+
+			ball.Position += ball.Speed * deltaTime / 1000;
+			return;
         }
 
         //判断两个线段是否相交
@@ -195,18 +196,28 @@ namespace GizmoBall.Physics
         //判断两个包围盒是否相撞，若相撞再去判断是否图形相撞,true为相撞
         private bool HitBox(Rigidbody rigidbody1, Rigidbody rigidbody2, int deltaTime)
         {
-            Vector2 point1 = rigidbody1.Position;
-            Vector2 point2 = new Vector2(rigidbody1.Position.x+rigidbody1.Size.x,rigidbody1.Position.y);
-            Vector2 point3 = new Vector2(point2.x,point2.y - rigidbody1.Size.y);
-            Vector2 point4 = new Vector2(point1.x, point3.y);
-            foreach(var r2point in rigidbody2.Lines)
-            {
-                if (HitLine(point1, point2, r2point, rigidbody2.Speed, deltaTime) != 0) return true;
-                else if (HitLine(point2, point3, r2point, rigidbody2.Speed, deltaTime) != 0) return true;
-                else if (HitLine(point3, point4, r2point, rigidbody2.Speed, deltaTime) != 0) return true;
-                else if (HitLine(point4, point1, r2point, rigidbody2.Speed, deltaTime) != 0) return true;
-            }
-            return false;
+			if (rigidbody1.Position.x + rigidbody1.Size.x < rigidbody2.Position.x)
+				return false;
+			if (rigidbody1.Position.x > rigidbody2.Position.x + rigidbody2.Size.x)
+				return false;
+			if (rigidbody1.Position.y + rigidbody1.Size.y < rigidbody2.Position.y)
+				return false;
+			if (rigidbody1.Position.y > rigidbody2.Position.y + rigidbody2.Size.y)
+				return false;
+			return true;
+
+			//Vector2 point1 = rigidbody1.Position;
+   //         Vector2 point2 = new Vector2(rigidbody1.Position.x+rigidbody1.Size.x,rigidbody1.Position.y);
+   //         Vector2 point3 = new Vector2(point2.x,point2.y - rigidbody1.Size.y);
+   //         Vector2 point4 = new Vector2(point1.x, point3.y);
+   //         foreach(var r2point in rigidbody2.Lines)
+   //         {
+   //             if (HitLine(point1, point2, r2point, rigidbody2.Speed, deltaTime) != 0) return true;
+   //             else if (HitLine(point2, point3, r2point, rigidbody2.Speed, deltaTime) != 0) return true;
+   //             else if (HitLine(point3, point4, r2point, rigidbody2.Speed, deltaTime) != 0) return true;
+   //             else if (HitLine(point4, point1, r2point, rigidbody2.Speed, deltaTime) != 0) return true;
+   //         }
+   //         return false;
         }
 
         //检测相撞
@@ -330,8 +341,8 @@ namespace GizmoBall.Physics
 		{
 			Scene ret = new Scene((int)size.x, (int)size.y)
 			{
-				ball = this.ball.Clone() as Ball,
-				flipper = this.flipper.Clone() as Flipper,
+				ball = ball == null ? null : this.ball.Clone() as Ball,
+				flipper = flipper == null ? null : this.flipper.Clone() as Flipper,
 				gravity = this.gravity,
 				isKinematic = this.isKinematic
 			};

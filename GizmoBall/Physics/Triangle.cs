@@ -10,7 +10,11 @@ namespace GizmoBall.Physics
     {
 		private TriangleState state;
 
-		public TriangleState State => state;
+		public TriangleState State
+		{
+			get => state;
+			set => state = value;
+		}
 
 		public override List<Vector2> Lines
 		{

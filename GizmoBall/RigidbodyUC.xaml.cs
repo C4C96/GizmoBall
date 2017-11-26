@@ -20,10 +20,12 @@ namespace GizmoBall
 	/// <summary>
 	/// RigidbodyUC.xaml 的交互逻辑
 	/// </summary>
-	public partial class RigidbodyUC : UserControl
+	public partial class RigidbodyUC : UserControl, INotifyPropertyChanged
 	{
 		private Rigidbody rigidbody;
 		private RigidbodyType type;
+
+		public event PropertyChangedEventHandler PropertyChanged;
 
 		public Rigidbody Rigidbody
 		{
@@ -76,6 +78,8 @@ namespace GizmoBall
 					OnTriangleStateChanged();
 					break;
 			}
+			if (PropertyChanged != null)
+				PropertyChanged.Invoke(this, e);
 		}
 
 		private void OnTriangleStateChanged()
