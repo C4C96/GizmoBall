@@ -1,7 +1,11 @@
 ﻿using GizmoBall.Physics;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +18,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.Serialization;
 
 namespace GizmoBall
 {
@@ -330,6 +335,40 @@ namespace GizmoBall
 					if (SceneUC.IsPlaying && SceneUC.Scene.Flipper != null)
 						SceneUC.Scene.Flipper.Speed = Vector2.Zero;
 					break;
+			}
+		}
+
+		private void SaveButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			SaveFileDialog sfd = new SaveFileDialog()
+			{
+				Filter = "GizmoBall场景文件(*.ooad)|*.ooad",
+				CheckPathExists = true,
+				RestoreDirectory = true,
+			};
+			if (sfd.ShowDialog() == true)
+			{
+				FileStream fs = new FileStream(sfd.FileName, FileMode.Create);
+				XmlSerializer xs = new XmlSerializer(typeof(Scene));
+				xs.Serialize(fs, SceneUC.Scene);
+				fs.Close();
+			}
+		}
+
+		private void LoadButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			OpenFileDialog ofd = new OpenFileDialog()
+			{
+				Filter = "GizmoBall场景文件(*.ooad)|*.ooad|所有文件|*.*",
+				CheckFileExists = true,
+				RestoreDirectory = true,
+			};
+			if (ofd.ShowDialog() == true)
+			{
+				FileStream fs = new FileStream(ofd.FileName, FileMode.Open);
+				XmlSerializer xs = new XmlSerializer(typeof(Scene));
+				SceneUC.Scene = xs.Deserialize(fs) as Scene;
+				fs.Close();
 			}
 		}
 	}

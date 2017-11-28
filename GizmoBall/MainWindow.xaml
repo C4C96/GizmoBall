@@ -129,10 +129,10 @@
                            Height="60" Width="60" MouseLeftButtonDown="PlayStopButton_MouseLeftButtonDown"/>
                     <Image Name="SaveButton" Source="./Images/SaveButton.png" 
                            HorizontalAlignment="Center"
-                           Height="60" Width="60" />
+                           Height="60" Width="60" MouseLeftButtonDown="SaveButton_MouseLeftButtonDown"/>
                     <Image Name="LoadButton" Source="./Images/LoadButton.png" 
                            HorizontalAlignment="Right"
-                           Height="60" Width="60" />
+                           Height="60" Width="60" MouseLeftButtonDown="LoadButton_MouseLeftButtonDown"/>
                 </Grid>
 
             </Grid>
