@@ -179,14 +179,23 @@ namespace GizmoBall.Physics
             Vector2 a = new Vector2(-ball.Speed.x, -ball.Speed.y);
             Vector2 b = new Vector2((ball.Center.x - circle.Center.x), (ball.Center.y - circle.Center.y));
             Vector2 c;
-            if(b.x == 0)
+            if(b.x == 0 && b.y!=0)
             {
-                c.x = -ball
+                c.x = -ball.Speed.x;
+                c.y = (b.Magnitude * ball.Speed.Magnitude * a.y * b.y) / (b.y * a.Magnitude * b.Magnitude);
             }
+            else if(b.y == 0)
+            {
+                c.x = (b.Magnitude * ball.Speed.Magnitude * a.x * b.x) / (b.x * a.Magnitude * b.Magnitude);
+                c.y = -ball.Speed.y;
+            }
+            else
+            {
                 c.x = (b.Magnitude * ball.Speed.Magnitude * a.x * b.x) / (b.x * a.Magnitude * b.Magnitude);
                 c.y = (b.Magnitude * ball.Speed.Magnitude * a.y * b.y) / (b.y * a.Magnitude * b.Magnitude);
-                ball.Speed = c;
-
+            }
+            ball.Speed = c;
+            ball.Position += ball.Speed * deltaTime / 1000;
             Console.WriteLine("更改后的速度"+ball.Speed);
             return;
         }
