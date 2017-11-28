@@ -68,6 +68,9 @@
     <Compile Include="SceneUC.xaml.cs">
       <DependentUpon>SceneUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SpeedBoardUC.xaml.cs">
+      <DependentUpon>SpeedBoardUC.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -85,6 +88,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SceneUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SpeedBoardUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -136,6 +143,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\LoadButton.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Flipper.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

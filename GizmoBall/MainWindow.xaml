@@ -8,6 +8,9 @@
         AllowsTransparency="True" WindowStyle="None" Background="Transparent"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
         PreviewKeyDown="Window_PreviewKeyDown"
+        PreviewKeyUp="Window_PreviewKeyUp"
+        MouseMove="Window_MouseMove"
+        MouseLeftButtonUp="Window_MouseLeftButtonUp"
         MinHeight="600" MinWidth="740"
         MaxHeight="1200" MaxWidth="1520"
         Title="GizmoBall" Height="720" Width="880" >
@@ -30,12 +33,14 @@
                            Grid.Column="0"
                            Margin="60,60,0,60" />
 
-            <Grid Grid.Column="1" Margin="10,60,20,50">
+            <Grid Grid.Column="1" Margin="10,50,20,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*"/>
                     <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="1.4*"/>
+                    <RowDefinition Height="3*"/>
+                    <RowDefinition Height="1.3*"/>
                     <RowDefinition Height="3*"/>
                 </Grid.RowDefinitions>
 
@@ -54,10 +59,15 @@
                        Height="30" Width="30" Margin="10" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
                 </WrapPanel>
 
-                <Image Name="DestroyerImage" Source="./Images/Destroyer.png" 
-                       Grid.Row="2"
+                <Image Name="FlipperImage" Source="./Images/Flipper.png" 
+                       Grid.Row="2" VerticalAlignment="Top"
                        Stretch="Fill"
-                       Height="30" Margin="10" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+                       Height="30" Margin="5" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+
+                <Image Name="DestroyerImage" Source="./Images/Destroyer.png" 
+                       Grid.Row="2" VerticalAlignment="Bottom"
+                       Stretch="Fill"
+                       Height="30" Margin="5" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
 
                 <Grid Grid.Row="3" VerticalAlignment="Top"
                       Background="#8F818181"
@@ -70,9 +80,9 @@
                              Margin="51,0,0,0"
                              HorizontalAlignment="Left"
                              Height="20" Width="20"
-                             TextChanged="SizeText_TextChanged"
-                             PreviewMouseMove="SizeText_PreviewMouseMove"
-                             GotFocus="SizeText_GotFocus"/>
+                             TextChanged="SizeBox_TextChanged"
+                             PreviewMouseMove="TextBox_PreviewMouseMove"
+                             GotFocus="TextBox_GotFocus"/>
                     <Label Content="X" FontSize="15"
                            HorizontalAlignment="Left"
                            Height="30" Margin="73,0,0,0"/>
@@ -81,12 +91,37 @@
                              Margin="98,0,0,0"
                              HorizontalAlignment="Left"
                              Height="20" Width="20"
-                             TextChanged="SizeText_TextChanged"
-                             PreviewMouseMove="SizeText_PreviewMouseMove"
-                             GotFocus="SizeText_GotFocus" />
+                             TextChanged="SizeBox_TextChanged"
+                             PreviewMouseMove="TextBox_PreviewMouseMove"
+                             GotFocus="TextBox_GotFocus" />
                 </Grid>
 
-                <Grid Grid.Row="4" VerticalAlignment="Top"
+                <Canvas Grid.Row="4" 
+                        Background="#8F818181">
+                    <Label Content="小球初速度：" FontSize="15"
+                           Height="30" />
+                    <local:SpeedBoardUC x:Name="SpeedBoardUC"
+                                        Height="120" Width="120" 
+                                        Canvas.Left="43" Canvas.Top="30" />
+                </Canvas>
+
+                <Grid Grid.Row="5" VerticalAlignment="Bottom"
+                      Background="#8F818181"
+                      Margin="0, 20">
+                    <Label Content="重力加速度：" FontSize="15"
+                           HorizontalAlignment="Left"
+                           Height="30" />
+                    <TextBox Name="GravityText"  
+                             Text="2"
+                             Margin="98,0,0,0"
+                             HorizontalAlignment="Left"
+                             Height="20" Width="40"
+                             TextChanged="GravityBox_TextChanged"
+                             PreviewMouseMove="TextBox_PreviewMouseMove"
+                             GotFocus="TextBox_GotFocus" />
+                </Grid>
+
+                <Grid Grid.Row="6" VerticalAlignment="Top"
                       Background="#8F818181"
                       Margin="0, 20">
                     <Image Name="PlayStopButton" Source="./Images/PlayButton.png" 
@@ -99,7 +134,7 @@
                            HorizontalAlignment="Right"
                            Height="60" Width="60" />
                 </Grid>
-                
+
             </Grid>
 
         </Grid>

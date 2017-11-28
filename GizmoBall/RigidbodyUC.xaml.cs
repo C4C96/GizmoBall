@@ -43,6 +43,11 @@ namespace GizmoBall
 						type = RigidbodyType.Ball;
 						Image.Source = new BitmapImage(new Uri(@"./Images/Ball.png", UriKind.Relative));
 					}
+					else if (rigidbody is Flipper)
+					{
+						type = RigidbodyType.Flipper;
+						Image.Source = new BitmapImage(new Uri(@"./Images/Flipper.png", UriKind.Relative));
+					}
 					else if (rigidbody is Destroyer)
 					{
 						type = RigidbodyType.Destroyer;
@@ -115,6 +120,7 @@ namespace GizmoBall
 		public enum RigidbodyType
 		{
 			Ball,
+			Flipper,
 			Destroyer,
 			Rectangle,
 			Triangle,
