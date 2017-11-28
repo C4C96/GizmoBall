@@ -64,6 +64,8 @@ namespace GizmoBall.Physics
             get => size;
         }
 
+
+
         // 用来记录上一帧的时间
         private DateTime? lastTime;
 
@@ -85,7 +87,10 @@ namespace GizmoBall.Physics
             //        return;
             //    }
             //}
-            HitEdge(ball, deltaTime);
+            if(HitEdge(ball,deltaTime))
+            {
+                return;
+            }
 
             //游戏继续
             ball.Speed = new Vector2(ball.Speed.x, (ball.Speed.y + deltaTime * gravity)); //重力加速度
@@ -105,25 +110,48 @@ namespace GizmoBall.Physics
         }
 
         //边缘碰撞检测
-        private void HitEdge(Ball ball,int deltaTime)
+        private bool HitEdge(Ball ball,int deltaTime)
         {
-            if(ball.Position.x<=ball.Size.x/2 && ball.Speed.x<0)  
+            bool ischanged = false;
+            float diffdistance = 0;
+            float distance = 0;
+            if(ball.Center.x  <= ball.Size.x/2 && ball.Speed.x<0)  
             {
+                ball.Position -= ball.Speed * deltaTime / 1000;
+                distance = ball.Speed.x * deltaTime / 1000;
+                diffdistance = ball.Position.x;
+                ball.Position = new Vector2(distance - diffdistance,ball.Position.y + ball.Speed.y * deltaTime /1000);
                 ball.Speed = new Vector2(-ball.Speed.x,ball.Speed.y);
+                ischanged = true;
             }
-            else if(ball.Position.x >= 20 - ball.Size.x/2 && ball.Speed.x>0)
+            else if(ball.Center.x >= 20 - ball.Size.x/2 && ball.Speed.x>0)
             {
+                ball.Position -= ball.Speed * deltaTime / 1000;
+                distance = ball.Speed.x * deltaTime / 1000;
+                diffdistance = 20 - ball.Position.x - ball.Size.x;
+                ball.Position = new Vector2((20 - (distance - diffdistance) - ball.Size.x), ball.Position.y + ball.Speed.y * deltaTime / 1000);
                 ball.Speed = new Vector2(-ball.Speed.x, ball.Speed.y);
+                ischanged = true;
             }
-            else if(ball.Position.y <= ball.Size.y / 2 && ball.Speed.y < 0)
+            else if(ball.Center.y<= ball.Size.y / 2 && ball.Speed.y < 0)
             {
+                ball.Position -= ball.Speed * deltaTime / 1000;
+                distance = ball.Speed.y * deltaTime / 1000;
+                diffdistance = ball.Position.y;
+                ball.Position = new Vector2(ball.Position.x + ball.Speed.x * deltaTime / 1000, distance - diffdistance);
                 ball.Speed = new Vector2(ball.Speed.x, -ball.Speed.y);
+                ischanged = true;
             }
-            else if (ball.Position.y >= 20 - ball.Size.y / 2 && ball.Speed.y > 0)
+            else if (ball.Center.y + ball.Speed.y * deltaTime / 1000 >= 20 - ball.Size.y / 2 && ball.Speed.y > 0)
             {
+                ball.Position -= ball.Speed * deltaTime / 1000;
+                distance = ball.Speed.y * deltaTime / 1000;
+                diffdistance = 20 - ball.Position.y - ball.Size.y;
+                ball.Position = new Vector2(ball.Position.x + ball.Speed.x * deltaTime / 1000,(20 - (distance - diffdistance) - ball.Size.y));
                 ball.Speed = new Vector2(ball.Speed.x, -ball.Speed.y);
+                ischanged = true;
             }
-            return;
+            return ischanged;
         }
 
         //检测撞击球形
