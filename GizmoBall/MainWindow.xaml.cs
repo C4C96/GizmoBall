@@ -27,7 +27,7 @@ namespace GizmoBall
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		private const float FLIPPER_SPEED = 2.0f;
+		private const float FLIPPER_SPEED = 5.0f;
 
 		private static MainWindow instance;
 		public static MainWindow Instance => instance;
@@ -317,11 +317,19 @@ namespace GizmoBall
 					break;
 				case Key.Left:
 					if (SceneUC.IsPlaying && SceneUC.Scene.Flipper != null)
-						SceneUC.Scene.Flipper.Speed = Vector2.Left * FLIPPER_SPEED;
+						SceneUC.Scene.Flipper.Speed = new Vector2(-FLIPPER_SPEED, SceneUC.Scene.Flipper.Speed.y);
 					break;
 				case Key.Right:
 					if (SceneUC.IsPlaying && SceneUC.Scene.Flipper != null)
-						SceneUC.Scene.Flipper.Speed = Vector2.Right * FLIPPER_SPEED;
+						SceneUC.Scene.Flipper.Speed = new Vector2(FLIPPER_SPEED, SceneUC.Scene.Flipper.Speed.y);
+					break;
+				case Key.Up:
+					if (SceneUC.IsPlaying && SceneUC.Scene.Flipper != null)
+						SceneUC.Scene.Flipper.Speed = new Vector2(SceneUC.Scene.Flipper.Speed.x, -FLIPPER_SPEED);
+					break;
+				case Key.Down:
+					if (SceneUC.IsPlaying && SceneUC.Scene.Flipper != null)
+						SceneUC.Scene.Flipper.Speed = new Vector2(SceneUC.Scene.Flipper.Speed.x, FLIPPER_SPEED);
 					break;
 			}
 		}
@@ -333,7 +341,11 @@ namespace GizmoBall
 				case Key.Left:
 				case Key.Right:
 					if (SceneUC.IsPlaying && SceneUC.Scene.Flipper != null)
-						SceneUC.Scene.Flipper.Speed = Vector2.Zero;
+						SceneUC.Scene.Flipper.Speed = new Vector2(0, SceneUC.Scene.Flipper.Speed.y);
+					break;
+				case Key.Up:
+				case Key.Down:
+					SceneUC.Scene.Flipper.Speed = new Vector2(SceneUC.Scene.Flipper.Speed.x, 0);
 					break;
 			}
 		}
