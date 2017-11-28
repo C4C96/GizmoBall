@@ -4,20 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Xml.Serialization;
 
 namespace GizmoBall
@@ -27,7 +17,7 @@ namespace GizmoBall
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		private const float FLIPPER_SPEED = 2.0f;
+		private const float FLIPPER_SPEED = 5.0f;
 
 		private static MainWindow instance;
 		public static MainWindow Instance => instance;
@@ -38,7 +28,7 @@ namespace GizmoBall
 			instance = this;
 			//SizeChanged += (o, e) => Width = (Height - 60) / 3 * 4;
 			SceneUC.Scene = new Scene(20, 20);
-			SpeedBoardUC.MaxSpeed = 5;
+			SpeedBoardUC.MaxSpeed = 10;
 			DataContext = this;
 		}
 
@@ -70,6 +60,24 @@ namespace GizmoBall
 					return g;
 				else
 					return null;
+			}
+		}
+
+		private IEnumerable<UIElement> ControlUIs
+		{
+			get
+			{
+				yield return BallImage;
+				foreach (var shape in ShapePanel.Children)
+					yield return shape as UIElement;
+				yield return FlipperImage;
+				yield return DestroyerImage;
+				yield return SizeXText;
+				yield return SizeYText;
+				yield return SpeedBoardUC;
+				yield return GravityText;
+				yield return SaveButton;
+				yield return LoadButton;
 			}
 		}
 
@@ -192,6 +200,7 @@ namespace GizmoBall
 			if (SceneUC.IsPlaying)
 			{
 				PlayStopButton.Source = new BitmapImage(new Uri(@"./Images/PlayButton.png", UriKind.Relative));
+				foreach (var ui in ControlUIs) ui.IsEnabled = true;
 				SceneUC.Stop();
 			}
 			// Play
@@ -215,7 +224,8 @@ namespace GizmoBall
 				PlayStopButton.Source = new BitmapImage(new Uri(@"./Images/StopButton.png", UriKind.Relative));
 				SceneUC.Scene.Gravity = InputGravity.Value;
 				SceneUC.Scene.Ball.Speed = SpeedBoardUC.Speed;
-				if (SceneUC.Scene.Flipper != null) SceneUC.Scene.Flipper.Speed = Vector2.Zero; 
+				if (SceneUC.Scene.Flipper != null) SceneUC.Scene.Flipper.Speed = Vector2.Zero;
+				foreach (var ui in ControlUIs) ui.IsEnabled = false;
 				SceneUC.Play();
 			}
 		}
@@ -316,12 +326,16 @@ namespace GizmoBall
 					Close();
 					break;
 				case Key.Left:
-					if (SceneUC.IsPlaying && SceneUC.Scene.Flipper != null)
-						SceneUC.Scene.Flipper.Speed = Vector2.Left * FLIPPER_SPEED;
+					SceneUC.Scene.Flipper.Speed = new Vector2(-FLIPPER_SPEED, SceneUC.Scene.Flipper.Speed.y);
 					break;
 				case Key.Right:
-					if (SceneUC.IsPlaying && SceneUC.Scene.Flipper != null)
-						SceneUC.Scene.Flipper.Speed = Vector2.Right * FLIPPER_SPEED;
+					SceneUC.Scene.Flipper.Speed = new Vector2(FLIPPER_SPEED, SceneUC.Scene.Flipper.Speed.y);
+					break;
+				case Key.Up:
+					SceneUC.Scene.Flipper.Speed = new Vector2(SceneUC.Scene.Flipper.Speed.x, -FLIPPER_SPEED);
+					break;
+				case Key.Down:
+					SceneUC.Scene.Flipper.Speed = new Vector2(SceneUC.Scene.Flipper.Speed.x, FLIPPER_SPEED);
 					break;
 			}
 		}
@@ -331,9 +345,20 @@ namespace GizmoBall
 			switch (e.Key)
 			{
 				case Key.Left:
+					if (!Keyboard.IsKeyDown(Key.Right))
+						SceneUC.Scene.Flipper.Speed = new Vector2(0, SceneUC.Scene.Flipper.Speed.y);
+					break;
 				case Key.Right:
-					if (SceneUC.IsPlaying && SceneUC.Scene.Flipper != null)
-						SceneUC.Scene.Flipper.Speed = Vector2.Zero;
+					if (!Keyboard.IsKeyDown(Key.Left))
+						SceneUC.Scene.Flipper.Speed = new Vector2(0, SceneUC.Scene.Flipper.Speed.y);
+					break;
+				case Key.Up:
+					if (!Keyboard.IsKeyDown(Key.Down))
+						SceneUC.Scene.Flipper.Speed = new Vector2(SceneUC.Scene.Flipper.Speed.x, 0);
+					break;
+				case Key.Down:
+					if (!Keyboard.IsKeyDown(Key.Up))
+						SceneUC.Scene.Flipper.Speed = new Vector2(SceneUC.Scene.Flipper.Speed.x, 0);
 					break;
 			}
 		}
