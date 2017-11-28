@@ -75,9 +75,16 @@ namespace GizmoBall.Physics
 			if (PropertyChanged != null)
 				PropertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
+        public Vector2 Center
+        {
+            get
+            {
+                return position + size / 2;
+            }
+        }
 
-		// 放置时候的旋转
-		public abstract void Rotate();
+        // 放置时候的旋转
+        public abstract void Rotate();
 
 		// 深度拷贝
 		public abstract object Clone();

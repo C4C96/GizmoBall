@@ -33,6 +33,8 @@ namespace GizmoBall.Physics
 			}
 		}
 
+        
+
 		public override object Clone()
 		{
 			Circle ret = new Circle()
