@@ -174,29 +174,39 @@ namespace GizmoBall.Physics
         private void MoveCircle(Ball ball, Rigidbody circle, int deltaTime)
         {
             Console.WriteLine("现在速度" + ball.Speed);
+            Console.WriteLine(circle.Center );
+            Console.WriteLine(ball.Center);
             ball.Position -= ball.Speed * deltaTime / 1000;
             //向量夹角公式
             Vector2 a = new Vector2(-ball.Speed.x, -ball.Speed.y);
-            Vector2 b = new Vector2((ball.Center.x - circle.Center.x), (ball.Center.y - circle.Center.y));
+            Vector2 b = new Vector2((circle.Center.x - ball.Center.x), (circle.Center.y - ball.Center.y));
+            Console.WriteLine("b is" + b);
             Vector2 c;
             if(b.x == 0 && b.y!=0)
             {
-                c.x = -ball.Speed.x;
-                c.y = (b.Magnitude * ball.Speed.Magnitude * a.y * b.y) / (b.y * a.Magnitude * b.Magnitude);
+                c.x = ball.Speed.x;
+                c.y = -ball.Speed.y;
             }
             else if(b.y == 0)
             {
-                c.x = (b.Magnitude * ball.Speed.Magnitude * a.x * b.x) / (b.x * a.Magnitude * b.Magnitude);
-                c.y = -ball.Speed.y;
+                c.x = -ball.Speed.x;
+                c.y = ball.Speed.y;
             }
             else
             {
-                c.x = (b.Magnitude * ball.Speed.Magnitude * a.x * b.x) / (b.x * a.Magnitude * b.Magnitude);
-                c.y = (b.Magnitude * ball.Speed.Magnitude * a.y * b.y) / (b.y * a.Magnitude * b.Magnitude);
+                float k = b.y / b.x;
+                c.x = ((1 - k * k) * a.x + 2 * k * a.y) / (k * k + 1);
+                c.y = ((k * k - 1) * a.y + 2 * k * a.x) / (k * k + 1);
+                Console.WriteLine(c.Magnitude);
+                Console.WriteLine(ball.Speed.Magnitude);
+                //c.x = (b.Magnitude * ball.Speed.Magnitude * a.x * b.x) / (b.x * a.Magnitude * b.Magnitude);
+                //c.y = (b.Magnitude * ball.Speed.Magnitude * a.y * b.y) / (b.y * a.Magnitude * b.Magnitude);
             }
+            Console.WriteLine("更改前的速度" + ball.Speed);
             ball.Speed = c;
+            Console.WriteLine("更改后的速度" + ball.Speed);
             ball.Position += ball.Speed * deltaTime / 1000;
-            Console.WriteLine("更改后的速度"+ball.Speed);
+            
             return;
         }
 
