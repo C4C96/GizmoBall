@@ -112,7 +112,7 @@
                            HorizontalAlignment="Left"
                            Height="30" />
                     <TextBox Name="GravityText"  
-                             Text="2"
+                             Text="0.02"
                              Margin="98,0,0,0"
                              HorizontalAlignment="Left"
                              Height="20" Width="40"
