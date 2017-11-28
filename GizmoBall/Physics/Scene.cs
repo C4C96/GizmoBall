@@ -207,5 +207,10 @@ namespace GizmoBall.Physics
         {
             size = new Vector2(x, y);
         }
+
+		public Scene() : this(20, 20)
+		{
+		
+		}
     }
 }

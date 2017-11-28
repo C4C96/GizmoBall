@@ -4,11 +4,17 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Xml.Serialization;
 
 namespace GizmoBall.Physics
 {
-    public abstract class Rigidbody : ICloneable, INotifyPropertyChanged
+	[XmlInclude(typeof(Rectangle))]
+	[XmlInclude(typeof(Flipper))]
+	[XmlInclude(typeof(Destroyer))]
+	[XmlInclude(typeof(Triangle))]
+	[XmlInclude(typeof(Circle))]
+	[XmlInclude(typeof(Ball))]
+	public abstract class Rigidbody : ICloneable, INotifyPropertyChanged
     {
         // position是图形包围盒的左上角的位置
         protected Vector2 position;
@@ -25,6 +31,7 @@ namespace GizmoBall.Physics
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		// 表示图形的各条边
+		[XmlIgnore]
 		public abstract List<Vector2> Lines
 		{
 			get;
