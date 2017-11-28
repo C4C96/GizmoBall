@@ -94,6 +94,7 @@ namespace GizmoBall.Physics
 
             //游戏继续
             ball.Speed = new Vector2(ball.Speed.x, (ball.Speed.y + deltaTime * gravity)); //重力加速度
+            flipper.Position = flipper.Position + flipper.Speed * deltaTime / 1000;
 
             foreach (var obstacle in obstacles)
             {
@@ -157,8 +158,8 @@ namespace GizmoBall.Physics
         //检测撞击球形
         private bool HitCircle(Ball ball, Rigidbody circle, int deltaTime)
         {
-            float diffdistance = (float)Math.Sqrt((ball.Position.x - circle.Position.x) * (ball.Position.x - circle.Position.x) +
-                                                 (ball.Position.y - circle.Position.y) * (ball.Position.y - circle.Position.y));
+            float diffdistance = (float)Math.Sqrt((ball.Center.x - circle.Center.x) * (ball.Center.x - circle.Center.x) +
+                                                 (ball.Center.y - circle.Center.y) * (ball.Center.y - circle.Center.y));
             if (diffdistance <= ((ball.Size.x/2) + (circle.Size.x/2)))
             {
                 return true;
@@ -175,18 +176,13 @@ namespace GizmoBall.Physics
             Console.WriteLine("现在速度" + ball.Speed);
             //向量夹角公式
             Vector2 a = new Vector2(-ball.Speed.x, -ball.Speed.y);
-            Vector2 b = new Vector2((ball.Position.x - circle.Position.x), (ball.Position.y - circle.Position.y));
+            Vector2 b = new Vector2((ball.Center.x - circle.Center.x), (ball.Center.y - circle.Center.y));
             Vector2 c;
-            if (ball.Speed.x == 0)
-                c.x = 0;
-            else if (ball.Speed.y == 0)
-                c.y = 0;
-            else
-            {
+            
                 c.x = (b.Magnitude * ball.Speed.Magnitude * a.x * b.x) / (b.x * a.Magnitude * b.Magnitude);
                 c.y = (b.Magnitude * ball.Speed.Magnitude * a.y * b.y) / (b.y * a.Magnitude * b.Magnitude);
                 ball.Speed = c;
-            }
+
             Console.WriteLine("更改后的速度"+ball.Speed);
             return;
         }
