@@ -174,11 +174,15 @@ namespace GizmoBall.Physics
         private void MoveCircle(Ball ball, Rigidbody circle, int deltaTime)
         {
             Console.WriteLine("现在速度" + ball.Speed);
+            ball.Position -= ball.Speed * deltaTime / 1000;
             //向量夹角公式
             Vector2 a = new Vector2(-ball.Speed.x, -ball.Speed.y);
             Vector2 b = new Vector2((ball.Center.x - circle.Center.x), (ball.Center.y - circle.Center.y));
             Vector2 c;
-            
+            if(b.x == 0)
+            {
+                c.x = -ball
+            }
                 c.x = (b.Magnitude * ball.Speed.Magnitude * a.x * b.x) / (b.x * a.Magnitude * b.Magnitude);
                 c.y = (b.Magnitude * ball.Speed.Magnitude * a.y * b.y) / (b.y * a.Magnitude * b.Magnitude);
                 ball.Speed = c;
