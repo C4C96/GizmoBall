@@ -49,8 +49,9 @@
                        HorizontalAlignment="Left"
                        Height="30" Width="30" Margin="10" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
 
-                <WrapPanel Grid.Row="1"
-                       HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <WrapPanel Name="ShapePanel"
+                           Grid.Row="1"
+                           HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Image Name="RectangleImage" Source="./Images/Rectangle.png" 
                        Height="30" Width="30" Margin="10" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
                     <Image Name="TriangleImage" Source="./Images/Triangle.png" 
