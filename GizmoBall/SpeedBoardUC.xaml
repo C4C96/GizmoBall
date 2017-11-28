@@ -16,9 +16,13 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <Slider Grid.Row="0" Grid.Column="1" 
+        <Slider Name="SpeedXSlider" 
+                Grid.Row="0" Grid.Column="1" 
+                Value="{Binding Path=Speed_X}"
                 Orientation="Horizontal"/>
-        <Slider Grid.Row="1" Grid.Column="0" 
+        <Slider Name="SpeedYSlider" 
+                Grid.Row="1" Grid.Column="0"
+                Value="{Binding Path=Speed_Y}"
                 Orientation="Vertical" RenderTransformOrigin="0.5,0.5">
             <Slider.RenderTransform>
                 <TransformGroup>
@@ -27,8 +31,18 @@
             </Slider.RenderTransform>
         </Slider>
 
-        <Canvas Name="Canvas" Grid.Row="1" Grid.Column="1" >
-            
+        <Canvas Name="Canvas" Grid.Row="1" Grid.Column="1" Margin="3"
+                PreviewMouseLeftButtonDown="Canvas_MouseLeftButtonDown">
+            <Border 
+                    Height="{Binding ElementName=Canvas, Path=ActualHeight}" 
+                    Width="{Binding ElementName=Canvas, Path=ActualWidth}"
+                    BorderBrush="White" BorderThickness="3" Background="#8F818181"/>
+            <Line Name="Line" 
+                  Stroke="White" StrokeThickness="3" />
+            <Line Name="Arrow_L" 
+                  Stroke="White" StrokeThickness="3"/>
+            <Line Name="Arrow_R" 
+                  Stroke="White" StrokeThickness="3"/>
         </Canvas>
     </Grid>
 </UserControl>

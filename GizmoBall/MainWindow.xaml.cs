@@ -22,27 +22,19 @@ namespace GizmoBall
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		private const float FLIPPER_SPEED = 2.0f;
+
+		private static MainWindow instance;
+		public static MainWindow Instance => instance;
+
 		public MainWindow()
 		{
 			InitializeComponent();
+			instance = this;
 			//SizeChanged += (o, e) => Width = (Height - 60) / 3 * 4;
 			SceneUC.Scene = new Scene(20, 20);
-			SceneUC.Scene.Gravity = 0.02f;
-		}
-
-		private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-		{
-			DragMove();
-		}
-
-		private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
-		{
-			switch (e.Key)
-			{
-				case Key.Escape:
-					Close();
-					break;
-			}
+			SpeedBoardUC.MaxSpeed = 5;
+			DataContext = this;
 		}
 
 		//private void Window_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -65,9 +57,26 @@ namespace GizmoBall
 			}
 		}
 
-		private RigidbodyUC draged = null;	// 当前正在拖动的图片
-		private Point lastPosition;			// 拖动前的位置（相对SceneUC）
-		private Point mouseOffset;			// 鼠标指针与被拖图片位置间的偏差值
+		public float? InputGravity
+		{
+			get
+			{
+				if (float.TryParse(GravityText.Text, out float g))
+					return g;
+				else
+					return null;
+			}
+		}
+
+		public double BallStartSpeed_X
+		{
+			get; set;
+		}
+
+		public double BallStartSpeed_Y
+		{
+			get; set;
+		}
 
 		private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 		{
@@ -92,6 +101,14 @@ namespace GizmoBall
 					obstacle.Rigidbody = new Ball()
 					{
 						Size = new Vector2(1, 1),
+					};
+					break;
+				case "FlipperImage":
+					if (SceneUC.Scene.Flipper != null)
+						return;
+					obstacle.Rigidbody = new Flipper()
+					{
+						Size = inputSize,
 					};
 					break;
 				case "DestroyerImage":
@@ -133,9 +150,22 @@ namespace GizmoBall
 			// 拖动后若坐标合法则父对象为SceneUC.MainCanvas
 			// 不合法则删除
 			draged = obstacle;
-			lastPosition = shape.TranslatePoint(new Point(0, 0), SceneUC);
-			mouseOffset = e.GetPosition(shape);
-			obstacle.MouseLeftButtonDown += (o1, e1) =>
+			lastPosition = obstacle.TranslatePoint(new Point(0, 0), SceneUC);
+			mouseOffset = new Point(obstacle.Width / 2, obstacle.Height / 2);
+			Register(obstacle);
+		}
+
+		private RigidbodyUC draged = null;  // 当前正在拖动的图片
+		private Point lastPosition;         // 拖动前的位置（相对SceneUC）
+		private Point mouseOffset;          // 鼠标指针与被拖图片位置间的偏差值
+
+		/// <summary>
+		/// 对一个RigidbodyUC进行注册，使之能够被拖动、右键旋转
+		/// </summary>
+		/// <param name="rigidbodyUC"></param>
+		public void Register(RigidbodyUC rigidbodyUC)
+		{
+			rigidbodyUC.MouseLeftButtonDown += (o1, e1) =>
 			{
 				e1.Handled = true;
 				draged = (o1 as RigidbodyUC);
@@ -146,49 +176,46 @@ namespace GizmoBall
 					SceneUC.RemoveRigidbodyUC(draged);
 					MainGrid.Children.Add(draged);
 				}
-				draged.SetValue(Panel.ZIndexProperty, 5);	
+				draged.SetValue(Panel.ZIndexProperty, 5);
 			};
-			obstacle.MouseRightButtonDown += (o1, e1) => (o1 as RigidbodyUC).Rigidbody.Rotate();
-			this.MouseMove += (o1, e1) =>
-			{
-				if (draged == null) return;
-				var mousePosition = e1.GetPosition(MainGrid);
-				draged.Margin = new Thickness(mousePosition.X - mouseOffset.X, mousePosition.Y - mouseOffset.Y, 0, 0);
-			};
-			this.MouseLeftButtonUp += (o1, e1) =>
-			{
-				if (draged == null) return;
-				draged.SetValue(Panel.ZIndexProperty, 0);
-				
-				var pos = draged.TranslatePoint(new Point(0, 0), SceneUC);
-				MainGrid.Children.Remove(draged);
-				draged.Rigidbody.Position = new Vector2((int)(pos.X / SceneUC.BlockWidth + 0.5), 
-														(int)(pos.Y / SceneUC.BlockHeight + 0.5));
-				if (SceneUC.AddRigidbodyUC(draged) == false)
-				{
-					draged.Rigidbody.Position = new Vector2((int)(lastPosition.X / SceneUC.BlockWidth + 0.5),
-															(int)(lastPosition.Y / SceneUC.BlockHeight + 0.5));
-					SceneUC.AddRigidbodyUC(draged);
-				}
-				draged = null;
-			};
+			rigidbodyUC.MouseRightButtonDown += (o1, e1) => (o1 as RigidbodyUC).Rigidbody.Rotate();
 		}
 
 		private void PlayStopButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 		{
+			// Stop
 			if (SceneUC.IsPlaying)
 			{
 				PlayStopButton.Source = new BitmapImage(new Uri(@"./Images/PlayButton.png", UriKind.Relative));
 				SceneUC.Stop();
 			}
+			// Play
 			else
 			{
+				if (InputGravity == null)
+				{
+					MessageBox.Show("重力加速度参数不合法");
+					return;
+				}
+				if (SceneUC.Scene.Ball == null)
+				{
+					MessageBox.Show("未放置小球");
+					return;
+				}
+				if (SceneUC.Scene.Flipper == null)
+				{
+					MessageBox.Show("未放置挡板");
+					return;
+				}
 				PlayStopButton.Source = new BitmapImage(new Uri(@"./Images/StopButton.png", UriKind.Relative));
+				SceneUC.Scene.Gravity = InputGravity.Value;
+				SceneUC.Scene.Ball.Speed = SpeedBoardUC.Speed;
+				if (SceneUC.Scene.Flipper != null) SceneUC.Scene.Flipper.Speed = Vector2.Zero; 
 				SceneUC.Play();
 			}
 		}
 
-		private void SizeText_TextChanged(object sender, TextChangedEventArgs e)
+		private void SizeBox_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			TextBox textbox = sender as TextBox;
 			if (textbox == null) return;
@@ -205,7 +232,24 @@ namespace GizmoBall
 			}
 		}
 
-		private void SizeText_PreviewMouseMove(object sender, MouseEventArgs e)
+		private void GravityBox_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			TextBox textbox = sender as TextBox;
+			if (textbox == null) return;
+
+			TextChange[] change = e.Changes.ToArray();
+			if (change[0].AddedLength > 0)
+			{
+				bool isFloat = float.TryParse(textbox.Text, out float input);
+				if (!isFloat || input < 0)
+				{
+					textbox.Text = textbox.Text.Remove(change[0].Offset, change[0].AddedLength);
+					textbox.Select(change[0].Offset, 0);
+				}
+			}
+		}
+
+		private void TextBox_PreviewMouseMove(object sender, MouseEventArgs e)
 		{
 			var textbox = sender as TextBox;
 			if (textbox == null) return;
@@ -214,13 +258,79 @@ namespace GizmoBall
 			e.Handled = true;
 		}
 
-		private void SizeText_GotFocus(object sender, RoutedEventArgs e)
+		private void TextBox_GotFocus(object sender, RoutedEventArgs e)
 		{
 			TextBox textbox = sender as TextBox;
 			if (textbox == null) return;
 
 			textbox.SelectAll();
 			e.Handled = true;
+		}
+
+		private void Window_MouseMove(object sender, MouseEventArgs e)
+		{
+			if (draged == null) return;
+			var mousePosition = e.GetPosition(MainGrid);
+			draged.Margin = new Thickness(mousePosition.X - mouseOffset.X, mousePosition.Y - mouseOffset.Y, 0, 0);
+		}
+
+		private void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+		{
+			if (draged == null) return;
+			draged.SetValue(Panel.ZIndexProperty, 0);
+
+			var pos = draged.TranslatePoint(new Point(0, 0), SceneUC);
+			MainGrid.Children.Remove(draged);
+			draged.Rigidbody.Position = new Vector2((int)(pos.X / SceneUC.BlockWidth + 0.5),
+													(int)(pos.Y / SceneUC.BlockHeight + 0.5));
+			if (SceneUC.AddRigidbodyUC(draged) == false)
+			{
+				draged.Rigidbody.Position = new Vector2((int)(lastPosition.X / SceneUC.BlockWidth + 0.5),
+														(int)(lastPosition.Y / SceneUC.BlockHeight + 0.5));
+				SceneUC.AddRigidbodyUC(draged);
+			}
+			draged = null;
+		}
+
+		private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			try
+			{
+				DragMove();
+			}
+			catch
+			{
+			}
+		}
+
+		private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+		{
+			switch (e.Key)
+			{
+				case Key.Escape:
+					Close();
+					break;
+				case Key.Left:
+					if (SceneUC.IsPlaying && SceneUC.Scene.Flipper != null)
+						SceneUC.Scene.Flipper.Speed = Vector2.Left * FLIPPER_SPEED;
+					break;
+				case Key.Right:
+					if (SceneUC.IsPlaying && SceneUC.Scene.Flipper != null)
+						SceneUC.Scene.Flipper.Speed = Vector2.Right * FLIPPER_SPEED;
+					break;
+			}
+		}
+
+		private void Window_PreviewKeyUp(object sender, KeyEventArgs e)
+		{
+			switch (e.Key)
+			{
+				case Key.Left:
+				case Key.Right:
+					if (SceneUC.IsPlaying && SceneUC.Scene.Flipper != null)
+						SceneUC.Scene.Flipper.Speed = Vector2.Zero;
+					break;
+			}
 		}
 	}
 }

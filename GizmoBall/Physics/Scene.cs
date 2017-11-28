@@ -113,7 +113,7 @@ namespace GizmoBall.Physics
                     }
                 }
             }
-			if (Hit(flipper, ball, deltaTime) == true)  //小球跟挡板相撞了
+			if (flipper != null && Hit(flipper, ball, deltaTime) == true)  //小球跟挡板相撞了
 			{
 				for (int i = 0; i < flipper.Lines.Count; i++)
 				{

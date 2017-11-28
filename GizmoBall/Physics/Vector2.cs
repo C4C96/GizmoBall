@@ -67,6 +67,7 @@ namespace GizmoBall.Physics
 		private static readonly Vector2 down = new Vector2(0f, 1f);
 		private static readonly Vector2 left = new Vector2(-1f, 0f);
 		private static readonly Vector2 right = new Vector2(1f, 0f);
+		private static readonly Vector2 zero = new Vector2(0f, 0f);
 
 		/// <summary>
 		/// 获得向上的单位向量(0, -1)
@@ -98,6 +99,14 @@ namespace GizmoBall.Physics
 		public static Vector2 Right
 		{
 			get => right;
+		}
+
+		/// <summary>
+		/// 获得零向量(0，0)
+		/// </summary>
+		public static Vector2 Zero
+		{
+			get => zero;
 		}
 
 		#region Operator Override

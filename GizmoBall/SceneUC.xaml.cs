@@ -45,6 +45,7 @@ namespace GizmoBall
 				DrawAxis((int)scene.Size.x, (int)scene.Size.y);
 				hasObject = new bool[(int)scene.Size.x, (int)scene.Size.y];
 				AddRigidbody(scene.Ball);
+				AddRigidbody(scene.Flipper);
 				foreach (var d in scene.Destroyers)
 					AddRigidbody(d);
 				foreach (var o in scene.Obstacles)
@@ -118,6 +119,7 @@ namespace GizmoBall
 				VerticalAlignment = VerticalAlignment.Top,
 				Margin = new Thickness(x * BlockWidth, y * BlockHeight, 0, 0)
 			};
+			MainWindow.Instance.Register(uc);
 			uc.PropertyChanged += RigidbodyUC_PropertyChanged;
 			MainCanvas.Children.Add(uc);
 			SetHasObject(x, y, width, height, true);
@@ -148,6 +150,9 @@ namespace GizmoBall
 				case RigidbodyUC.RigidbodyType.Destroyer:
 					scene.Destroyers.Add(rigidbodyUC.Rigidbody as Destroyer);
 					break;
+				case RigidbodyUC.RigidbodyType.Flipper:
+					scene.Flipper = rigidbodyUC.Rigidbody as Flipper;
+					break;
 				default:
 					scene.Obstacles.Add(rigidbodyUC.Rigidbody);
 					break;
@@ -177,6 +182,9 @@ namespace GizmoBall
 			{
 				case RigidbodyUC.RigidbodyType.Ball:
 					scene.Ball = null;
+					break;
+				case RigidbodyUC.RigidbodyType.Flipper:
+					scene.Flipper = null;
 					break;
 				case RigidbodyUC.RigidbodyType.Destroyer:
 					scene.Destroyers.Remove(rigidbodyUC.Rigidbody as Destroyer);
@@ -221,7 +229,7 @@ namespace GizmoBall
 		{
 			isPlaying = false;
 			// TODO
-			scene = backUp;
+			Scene = backUp;
 			CompositionTarget.Rendering -= Update;
 		}
 
