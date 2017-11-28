@@ -64,6 +64,8 @@ namespace GizmoBall.Physics
             get => size;
         }
 
+
+
         // 用来记录上一帧的时间
         private DateTime? lastTime;
 
@@ -85,6 +87,10 @@ namespace GizmoBall.Physics
             //        return;
             //    }
             //}
+            if(HitEdge(ball,deltaTime))
+            {
+                return;
+            }
 
             //游戏继续
             ball.Speed = new Vector2(ball.Speed.x, (ball.Speed.y + deltaTime * gravity)); //重力加速度
@@ -101,6 +107,51 @@ namespace GizmoBall.Physics
             }
             ball.Position += ball.Speed * deltaTime / 1000;
             return;
+        }
+
+        //边缘碰撞检测
+        private bool HitEdge(Ball ball,int deltaTime)
+        {
+            bool ischanged = false;
+            float diffdistance = 0;
+            float distance = 0;
+            if(ball.Center.x  <= ball.Size.x/2 && ball.Speed.x<0)  
+            {
+                ball.Position -= ball.Speed * deltaTime / 1000;
+                distance = ball.Speed.x * deltaTime / 1000;
+                diffdistance = ball.Position.x;
+                ball.Position = new Vector2(distance - diffdistance,ball.Position.y + ball.Speed.y * deltaTime /1000);
+                ball.Speed = new Vector2(-ball.Speed.x,ball.Speed.y);
+                ischanged = true;
+            }
+            else if(ball.Center.x >= 20 - ball.Size.x/2 && ball.Speed.x>0)
+            {
+                ball.Position -= ball.Speed * deltaTime / 1000;
+                distance = ball.Speed.x * deltaTime / 1000;
+                diffdistance = 20 - ball.Position.x - ball.Size.x;
+                ball.Position = new Vector2((20 - (distance - diffdistance) - ball.Size.x), ball.Position.y + ball.Speed.y * deltaTime / 1000);
+                ball.Speed = new Vector2(-ball.Speed.x, ball.Speed.y);
+                ischanged = true;
+            }
+            else if(ball.Center.y<= ball.Size.y / 2 && ball.Speed.y < 0)
+            {
+                ball.Position -= ball.Speed * deltaTime / 1000;
+                distance = ball.Speed.y * deltaTime / 1000;
+                diffdistance = ball.Position.y;
+                ball.Position = new Vector2(ball.Position.x + ball.Speed.x * deltaTime / 1000, distance - diffdistance);
+                ball.Speed = new Vector2(ball.Speed.x, -ball.Speed.y);
+                ischanged = true;
+            }
+            else if (ball.Center.y + ball.Speed.y * deltaTime / 1000 >= 20 - ball.Size.y / 2 && ball.Speed.y > 0)
+            {
+                ball.Position -= ball.Speed * deltaTime / 1000;
+                distance = ball.Speed.y * deltaTime / 1000;
+                diffdistance = 20 - ball.Position.y - ball.Size.y;
+                ball.Position = new Vector2(ball.Position.x + ball.Speed.x * deltaTime / 1000,(20 - (distance - diffdistance) - ball.Size.y));
+                ball.Speed = new Vector2(ball.Speed.x, -ball.Speed.y);
+                ischanged = true;
+            }
+            return ischanged;
         }
 
         //检测撞击球形
@@ -121,13 +172,23 @@ namespace GizmoBall.Physics
         //撞到球形之后的操作
         private void MoveCircle(Ball ball, Rigidbody circle, int deltaTime)
         {
+            Console.WriteLine("现在速度" + ball.Speed);
             //向量夹角公式
             Vector2 a = new Vector2(-ball.Speed.x, -ball.Speed.y);
             Vector2 b = new Vector2((ball.Position.x - circle.Position.x), (ball.Position.y - circle.Position.y));
             Vector2 c;
-            c.x = (b.Magnitude * ball.Speed.Magnitude * a.x * b.x) / (b.x * a.Magnitude * b.Magnitude);
-            c.y = (b.Magnitude * ball.Speed.Magnitude * a.y * b.y) / (b.y * a.Magnitude * b.Magnitude);
-            ball.Speed = c;
+            if (ball.Speed.x == 0)
+                c.x = 0;
+            else if (ball.Speed.y == 0)
+                c.y = 0;
+            else
+            {
+                c.x = (b.Magnitude * ball.Speed.Magnitude * a.x * b.x) / (b.x * a.Magnitude * b.Magnitude);
+                c.y = (b.Magnitude * ball.Speed.Magnitude * a.y * b.y) / (b.y * a.Magnitude * b.Magnitude);
+                ball.Speed = c;
+            }
+            Console.WriteLine("更改后的速度"+ball.Speed);
+            return;
         }
 
         public object Clone()
