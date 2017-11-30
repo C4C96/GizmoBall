@@ -80,13 +80,11 @@ namespace GizmoBall.Physics
             DateTime now = DateTime.Now;
             int deltaTime = (now - lastTime.Value).Milliseconds; // 与上一帧的时间差（毫秒）
             lastTime = now;
-            //foreach (var destroyer in destroyers)
-            //{
-            //    if (Hit(destroyer, ball, deltaTime)) //碰到吸收器，游戏结束
-            //    {
-            //        return;
-            //    }
-            //}
+            foreach (var destroyer in destroyers)
+            {
+                if (HitPolygon(ball, destroyer, deltaTime) == true)
+                    return;//游戏结束
+            }
             if(HitEdge(ball,deltaTime))
             {
                 return;
@@ -104,6 +102,10 @@ namespace GizmoBall.Physics
                     {
                         MoveCircle(ball, obstacle, deltaTime);
                     }
+                }
+                else
+                {
+                    HitPolygon(ball, obstacle, deltaTime);
                 }
             }
             ball.Position += ball.Speed * deltaTime / 1000;
@@ -195,19 +197,86 @@ namespace GizmoBall.Physics
             else
             {
                 float k = b.y / b.x;
-                c.x = ((1 - k * k) * a.x + 2 * k * a.y) / (k * k + 1);
-                c.y = ((k * k - 1) * a.y + 2 * k * a.x) / (k * k + 1);
-                Console.WriteLine(c.Magnitude);
-                Console.WriteLine(ball.Speed.Magnitude);
-                //c.x = (b.Magnitude * ball.Speed.Magnitude * a.x * b.x) / (b.x * a.Magnitude * b.Magnitude);
-                //c.y = (b.Magnitude * ball.Speed.Magnitude * a.y * b.y) / (b.y * a.Magnitude * b.Magnitude);
+                c = VectorRebound(a,k);
             }
-            Console.WriteLine("更改前的速度" + ball.Speed);
             ball.Speed = c;
-            Console.WriteLine("更改后的速度" + ball.Speed);
             ball.Position += ball.Speed * deltaTime / 1000;
             
             return;
+        }
+
+        //碰撞其他多边形
+        private bool HitPolygon(Ball ball,Rigidbody polygon ,int deltaTime)
+        {
+            Vector2 r1point1 = new Vector2(0,0);
+            Vector2 r1point2 = new Vector2(0, 0);
+            Vector2 hitpoint = new Vector2(0, 0);
+            bool ifhit = false;
+            for (int i = 0; i < polygon.Lines.Count; i++)
+            {
+                r1point1 = polygon.Lines[i];
+                if (i == polygon.Lines.Count - 1)
+                    r1point2 = polygon.Lines[0];
+                else
+                    r1point2 = polygon.Lines[i + 1];
+                foreach (var ballPoint in ball.Lines)
+                {
+                    if(GetDistance(ballPoint,r1point1,r1point2) <= ball.Size.x/2)
+                    {
+                        hitpoint = ballPoint;
+                        ifhit = true;
+                        break;
+                    }
+                }
+                if (ifhit == true) break;
+            }
+            if (ifhit == true)
+            {
+                ball.Position -= ball.Speed * deltaTime / 1000;
+                if(r1point1.x == r1point2.x)
+                {
+                    ball.Speed = new Vector2(-ball.Speed.x,ball.Speed.y);
+                }
+                else
+                {
+                    float k = (r1point2.y - r1point1.y) / (r1point2.x - r1point1.x);
+                    ball.Speed = VectorRebound(ball.Speed, k);
+                }
+                ball.Position += ball.Speed * deltaTime/1000;
+                return true;
+            }
+            else
+                return false;
+        }
+
+        //求一个向量的反弹向量，k法线斜率，a初始向量
+        private Vector2 VectorRebound(Vector2 a,float k)
+        {
+            Vector2 c;
+            c.x = ((1 - k * k) * a.x + 2 * k * a.y) / (k * k + 1);
+            c.y = ((k * k - 1) * a.y + 2 * k * a.x) / (k * k + 1);
+            return c;
+        }
+
+        //求点P到线段AB的距离
+        private float GetDistance(Vector2 P, Vector2 A, Vector2 B)
+        {
+            Vector2 AP = P - A;
+            Vector2 AB = B - A;
+            Vector2 BP = P - B;
+            float APcos =(AP.x * AB.x + AP.y * AB.y) / AB.Magnitude;
+            if(APcos<0)
+            {
+                return AP.Magnitude;
+            }
+            else if(APcos>AB.Magnitude)
+            {
+                return BP.Magnitude;
+            }
+            else
+            {
+                return (float)Math.Sqrt(AP.Magnitude*AP.Magnitude - APcos * APcos);
+            }
         }
 
         public object Clone()
