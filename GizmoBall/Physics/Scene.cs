@@ -92,7 +92,10 @@ namespace GizmoBall.Physics
 
             //游戏继续
             ball.Speed = new Vector2(ball.Speed.x, (ball.Speed.y + deltaTime * gravity)); //重力加速度
-            flipper.Position = flipper.Position + flipper.Speed * deltaTime / 1000;
+
+            FlipperHit(deltaTime);
+
+            HitPolygon(ball,flipper,deltaTime);
 
             foreach (var obstacle in obstacles)
             {
@@ -109,7 +112,32 @@ namespace GizmoBall.Physics
                 }
             }
             ball.Position += ball.Speed * deltaTime / 1000;
+
             return;
+        }
+        //检测挡板碰撞物体
+        private void FlipperHit(int deltaTime)
+        {
+            //碰撞四条边
+            if ((flipper.Position.x + flipper.Speed.x * deltaTime / 1000) < 0)
+                return;
+            else if ((flipper.Position.y + flipper.Speed.y * deltaTime / 1000) < 0)
+                return;
+            else if ((flipper.Position.x + flipper.Size.x + flipper.Speed.x * deltaTime / 1000) > 20)
+                return;
+            else if ((flipper.Position.y + flipper.Size.y + flipper.Speed.y * deltaTime / 1000) > 20)
+                return;
+            else
+            {
+                foreach(var obstacle in obstacles)
+                {
+                    Vector2 diff = obstacle.Center - (flipper.Center + flipper.Speed * deltaTime/1000);
+                    if (diff.Magnitude < flipper.Size.x / 2 + obstacle.Size.x/2)
+                        return;
+                }
+            }
+            flipper.Position += flipper.Speed * deltaTime / 1000;
+                
         }
 
         //边缘碰撞检测
