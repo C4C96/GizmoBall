@@ -25,6 +25,8 @@ namespace GizmoBall.Physics
 
         private Flipper flipper;
 
+		public event EventHandler BallDestroied; 
+
         public float Gravity
         {
             get => gravity;
@@ -82,8 +84,12 @@ namespace GizmoBall.Physics
             lastTime = now;
             foreach (var destroyer in destroyers)
             {
-                if (HitPolygon(ball, destroyer, deltaTime) == true)
-                    return;//游戏结束
+				if (HitPolygon(ball, destroyer, deltaTime) == true)
+				{
+					if (BallDestroied != null)
+						BallDestroied.Invoke(null, null);
+					return;//游戏结束
+				}
             }
             if(HitEdge(ball,deltaTime))
             {

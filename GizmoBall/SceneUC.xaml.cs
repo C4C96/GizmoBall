@@ -215,7 +215,7 @@ namespace GizmoBall
 		{
 			isPlaying = true;
 			backUp = scene.Clone() as Scene;
-			// TODO
+			scene.BallDestroied += OnBallDestroied;
 			CompositionTarget.Rendering += Update;
 		}
 
@@ -225,10 +225,15 @@ namespace GizmoBall
 				scene.NextFrame();
 		}
 
+		private void OnBallDestroied(object o, EventArgs e)
+		{
+			CompositionTarget.Rendering -= Update;
+		}
+
 		public void Stop()
 		{
 			isPlaying = false;
-			// TODO
+			scene.BallDestroied -= OnBallDestroied;
 			Scene = backUp;
 			CompositionTarget.Rendering -= Update;
 		}
