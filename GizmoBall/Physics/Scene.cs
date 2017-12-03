@@ -137,9 +137,43 @@ namespace GizmoBall.Physics
             {
                 foreach(var obstacle in obstacles)
                 {
-                    Vector2 diff = obstacle.Center - (flipper.Center + flipper.Speed * deltaTime/1000);
-                    if (diff.Magnitude < flipper.Size.x / 2 + obstacle.Size.x/2)
-                        return;
+                    foreach(var opoint in obstacle.Lines)
+                    {
+                        float diffdiatance = 0;
+                        float movedistance = 0;
+                        if(opoint.y < flipper.Lines[0].y && opoint.x>flipper.Lines[0].x &&   //点在挡板上面
+                           opoint.x < flipper.Lines[1].x && flipper.Speed.y < 0)
+                        {
+                            diffdiatance = flipper.Lines[0].y - opoint.y;
+                            movedistance = -flipper.Speed.y * deltaTime / 1000;
+                            if (diffdiatance < movedistance) return;
+                        }
+                        else if(opoint.x > flipper.Lines[1].x && opoint.y>flipper.Lines[1].y &&   //点在挡板右边
+                            opoint.y<flipper.Lines[2].y && flipper.Speed.x>0)
+                        {
+                            diffdiatance = opoint.x - flipper.Lines[1].x;
+                            movedistance = flipper.Speed.x * deltaTime / 1000;
+                            if (diffdiatance < movedistance) return;
+                        }
+                        else if(opoint.y > flipper.Lines[2].y && opoint.x > flipper.Lines[3].x &&   //点在挡板下面
+                            opoint.x < flipper.Lines[2].x && flipper.Speed.y > 0)
+                        {
+                            diffdiatance = opoint.y - flipper.Lines[2].y;
+                            movedistance = flipper.Speed.y * deltaTime / 1000;
+                            if (diffdiatance < movedistance) return;
+                        }
+                        else if(opoint.x < flipper.Lines[3].x && opoint.y > flipper.Lines[0].y  //点在挡板左边
+                            && opoint.y < flipper.Lines[3].y && flipper.Speed.x < 0)
+                        {
+                            diffdiatance = flipper.Lines[3].x - opoint.x;
+                            movedistance = (-flipper.Speed.x) * deltaTime / 1000;
+                            if (diffdiatance < movedistance) return;
+                        }
+                    }
+                    if(obstacle is Triangle)
+                    {
+
+                    }
                 }
             }
             flipper.Position += flipper.Speed * deltaTime / 1000;
