@@ -25,9 +25,12 @@ namespace GizmoBall
 		public MainWindow()
 		{
 			InitializeComponent();
+			
 			instance = this;
 			//SizeChanged += (o, e) => Width = (Height - 60) / 3 * 4;
-			SceneUC.Scene = new Scene(20, 20);
+			string path = (Application.Current as App).Path;
+			if (path == null || !LoadScene(path))
+				SceneUC.Scene = new Scene(20, 20);
 			SpeedBoardUC.MaxSpeed = 10;
 			DataContext = this;
 		}
@@ -192,6 +195,24 @@ namespace GizmoBall
 				draged.SetValue(Panel.ZIndexProperty, 5);
 			};
 			rigidbodyUC.MouseRightButtonDown += (o1, e1) => (o1 as RigidbodyUC).Rigidbody.Rotate();
+		}
+
+		private bool LoadScene(string path)
+		{
+			using (FileStream fs = new FileStream(path, FileMode.Open))
+			{
+				XmlSerializer xs = new XmlSerializer(typeof(Scene));
+				try
+				{
+					SceneUC.Scene = xs.Deserialize(fs) as Scene;
+				}
+				catch
+				{
+					MessageBox.Show("文件格式不正确", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+					return false;
+				}
+			}
+			return true;
 		}
 
 		private void PlayStopButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -373,10 +394,11 @@ namespace GizmoBall
 			};
 			if (sfd.ShowDialog() == true)
 			{
-				FileStream fs = new FileStream(sfd.FileName, FileMode.Create);
-				XmlSerializer xs = new XmlSerializer(typeof(Scene));
-				xs.Serialize(fs, SceneUC.Scene);
-				fs.Close();
+				using (FileStream fs = new FileStream(sfd.FileName, FileMode.Create))
+				{
+					XmlSerializer xs = new XmlSerializer(typeof(Scene));
+					xs.Serialize(fs, SceneUC.Scene);
+				};
 			}
 		}
 
@@ -390,10 +412,7 @@ namespace GizmoBall
 			};
 			if (ofd.ShowDialog() == true)
 			{
-				FileStream fs = new FileStream(ofd.FileName, FileMode.Open);
-				XmlSerializer xs = new XmlSerializer(typeof(Scene));
-				SceneUC.Scene = xs.Deserialize(fs) as Scene;
-				fs.Close();
+				LoadScene(ofd.FileName);
 			}
 		}
 	}
