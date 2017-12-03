@@ -238,7 +238,6 @@ namespace GizmoBall.Physics
         {
             Vector2 r1point1 = new Vector2(0,0);
             Vector2 r1point2 = new Vector2(0, 0);
-            Vector2 hitpoint = new Vector2(0, 0);
             bool ifhit = false;
             for (int i = 0; i < polygon.Lines.Count; i++)
             {
@@ -247,14 +246,10 @@ namespace GizmoBall.Physics
                     r1point2 = polygon.Lines[0];
                 else
                     r1point2 = polygon.Lines[i + 1];
-                foreach (var ballPoint in ball.Lines)
+                if(GetDistance(ball.Center,r1point1,r1point2) <= ball.Size.x/2)
                 {
-                    if(GetDistance(ballPoint,r1point1,r1point2) <= ball.Size.x/2)
-                    {
-                        hitpoint = ballPoint;
                         ifhit = true;
                         break;
-                    }
                 }
                 if (ifhit == true) break;
             }
