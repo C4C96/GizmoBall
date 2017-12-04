@@ -190,12 +190,11 @@ namespace GizmoBall.Physics
             float m = a.y - k * a.x;
             foreach (var flipperpoint in flipper.Lines)
             {
-                if ((float)(Math.Abs(k * flipperpoint.x - flipperpoint.y + m) / Math.Sqrt(k * k + 1))
-                == GetDistance(flipperpoint, a, b))
+                Vector2 next = flipperpoint + flipper.Speed * deltaTime / 1000;
+                if ((k * next.x + m - next.y) * (k * flipperpoint.x + m - flipperpoint.y) <= 0 )
                 {
-                    Vector2 next = flipperpoint + flipper.Speed * deltaTime / 1000;
-                    if ((k * next.x + m - next.y) * (k * flipperpoint.x + m - flipperpoint.y) <= 0)
-                        return true;
+                if ((Math.Abs(k * flipperpoint.x - flipperpoint.y + m) / Math.Sqrt(k * k + 1)).ToString("0.0000")== GetDistance(flipperpoint, a, b).ToString("0.0000"))
+                    return true;
                 }
             }
             return false;
