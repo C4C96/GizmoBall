@@ -170,11 +170,8 @@ namespace GizmoBall.Physics
                             if (diffdiatance < movedistance) return;
                         }
                     }
-                    if(obstacle is Triangle)
-                    {
-                        if (HitHypotenuse(flipper,obstacle as Triangle,deltaTime))
-                            return;
-                    }
+                    if (HitHypotenuse(flipper, obstacle, deltaTime))
+                        return;
                 }
             }
             flipper.Position += flipper.Speed * deltaTime / 1000;
@@ -182,23 +179,41 @@ namespace GizmoBall.Physics
         }
 
         //FlipperHit中的一个小函数
-        private bool HitHypotenuse(Flipper flipper, Triangle triangle, int deltaTime)
+        private bool HitHypotenuse(Flipper flipper, Rigidbody polygon, int deltaTime)
         {
-            Vector2 a = triangle.Hypotenuse[0];
-            Vector2 b = triangle.Hypotenuse[1];
-            float k = (a.y - b.y) / (a.x - b.x);
-            float m = a.y - k * a.x;
-            foreach (var flipperpoint in flipper.Lines)
+            Vector2 r1point1 = new Vector2(0, 0);
+            Vector2 r1point2 = new Vector2(0, 0);
+            for (int i = 0; i < polygon.Lines.Count; i++)
             {
-                Vector2 next = flipperpoint + flipper.Speed * deltaTime / 1000;
-                if ((k * next.x + m - next.y) * (k * flipperpoint.x + m - flipperpoint.y) <= 0 )
+                r1point1 = polygon.Lines[i];
+                if (i == polygon.Lines.Count - 1)
+                    r1point2 = polygon.Lines[0];
+                else
+                    r1point2 = polygon.Lines[i + 1];
+                foreach (var flipperpoint in flipper.Lines)
                 {
-                if ((Math.Abs(k * flipperpoint.x - flipperpoint.y + m) / Math.Sqrt(k * k + 1)).ToString("0.0000")== GetDistance(flipperpoint, a, b).ToString("0.0000"))
-                    return true;
+                    Vector2 next = flipperpoint + flipper.Speed * deltaTime / 1000;
+                    if (r1point1.x == r1point2.x && (flipperpoint.x - r1point1.x) * (next.x - r1point1.x) <= 0
+                        && (flipperpoint.y - r1point1.y) * (flipperpoint.y - r1point2.y) < 0)
+                        return true;
+                    else if (r1point1.y == r1point2.y && (flipperpoint.y - r1point1.y) * (next.y - r1point1.y) <= 0
+                        && (flipperpoint.x - r1point1.x) * (flipperpoint.x - r1point2.x) < 0)
+                        return true;
+                    else
+                    {
+                        float k = (r1point1.y - r1point2.y) / (r1point1.x - r1point2.x);
+                        float m = r1point1.y - k * r1point1.x;
+                        if ((k * next.x + m - next.y) * (k * flipperpoint.x + m - flipperpoint.y) <= 0)
+                        {
+                            if ((Math.Abs(k * flipperpoint.x - flipperpoint.y + m) / Math.Sqrt(k * k + 1)).ToString("0.0000") == GetDistance(flipperpoint, r1point1, r1point2).ToString("0.0000"))
+                                return true;
+                        }
+                    }
                 }
             }
             return false;
         }
+    
 
         //边缘碰撞检测
         private bool HitEdge(Ball ball,int deltaTime)
@@ -292,7 +307,7 @@ namespace GizmoBall.Physics
         //碰撞其他多边形
         private bool HitPolygon(Ball ball,Rigidbody polygon ,int deltaTime)
         {
-            Vector2 r1point1 = new Vector2(0,0);
+            Vector2 r1point1 = new Vector2(0, 0);
             Vector2 r1point2 = new Vector2(0, 0);
             bool ifhit = false;
             for (int i = 0; i < polygon.Lines.Count; i++)
