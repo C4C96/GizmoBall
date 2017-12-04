@@ -32,8 +32,30 @@ namespace GizmoBall.Physics
 				return lines;
 			}
 		}
-		
-		public override void Rotate()
+        public List<Vector2> Hypotenuse
+        {
+            get
+            {
+                List<Vector2> ret = new List<Vector2>();
+                switch (state)
+                {
+                    case TriangleState.RightUp:
+                    case TriangleState.LeftDown:
+                        ret.Add(position);
+                        ret.Add(position + size);
+                        break;
+                    case TriangleState.RightDown:
+                    case TriangleState.LeftUp:
+                        ret.Add(position + Vector2.Right * size.x);
+                        ret.Add(position + Vector2.Down * size.y);
+                        break;
+                }
+                return ret;
+            }
+        }
+
+
+        public override void Rotate()
         {
 			state = (TriangleState)(((int)state + 1) % 4);
 			OnPropertyChanged("TriangleState");

@@ -172,12 +172,33 @@ namespace GizmoBall.Physics
                     }
                     if(obstacle is Triangle)
                     {
-
+                        if (HitHypotenuse(flipper,obstacle as Triangle,deltaTime))
+                            return;
                     }
                 }
             }
             flipper.Position += flipper.Speed * deltaTime / 1000;
                 
+        }
+
+        //FlipperHit中的一个小函数
+        private bool HitHypotenuse(Flipper flipper, Triangle triangle, int deltaTime)
+        {
+            Vector2 a = triangle.Hypotenuse[0];
+            Vector2 b = triangle.Hypotenuse[1];
+            float k = (a.y - b.y) / (a.x - b.x);
+            float m = a.y - k * a.x;
+            foreach (var flipperpoint in flipper.Lines)
+            {
+                if ((float)(Math.Abs(k * flipperpoint.x - flipperpoint.y + m) / Math.Sqrt(k * k + 1))
+                == GetDistance(flipperpoint, a, b))
+                {
+                    Vector2 next = flipperpoint + flipper.Speed * deltaTime / 1000;
+                    if ((k * next.x + m - next.y) * (k * flipperpoint.x + m - flipperpoint.y) <= 0)
+                        return true;
+                }
+            }
+            return false;
         }
 
         //边缘碰撞检测
@@ -243,14 +264,10 @@ namespace GizmoBall.Physics
         //撞到球形之后的操作
         private void MoveCircle(Ball ball, Rigidbody circle, int deltaTime)
         {
-            Console.WriteLine("现在速度" + ball.Speed);
-            Console.WriteLine(circle.Center );
-            Console.WriteLine(ball.Center);
             ball.Position -= ball.Speed * deltaTime / 1000;
             //向量夹角公式
             Vector2 a = new Vector2(-ball.Speed.x, -ball.Speed.y);
             Vector2 b = new Vector2((circle.Center.x - ball.Center.x), (circle.Center.y - ball.Center.y));
-            Console.WriteLine("b is" + b);
             Vector2 c;
             if(b.x == 0 && b.y!=0)
             {
